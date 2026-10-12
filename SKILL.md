@@ -19,7 +19,23 @@ Product skill. Load this first. Then load `bi-insights-pr-review` (BI gates) and
 |-----------|---------|
 | Semantic Scout / rate this ticket / before PR | Full Scout card on **local branch** |
 | Scope preflight for AN-XXXX | Same, after Jira fetch + git diff |
-| Setup Semantic Scout | Load `setup-semantic-scout` instead |
+| Setup Semantic Scout | Run **Setup** below (do not send the user to copy files or run scripts) |
+
+## What the user does (only this)
+
+1. Clone **glofoxinc/semantic_scout** and open the repo folder in **Cursor**.
+2. Say **Setup Semantic Scout**.
+3. If you ask for GitHub or Jira access, they answer **once**.
+
+**Never** tell the user to copy `SKILL.md` by hand or run PowerShell.
+
+## Setup — when the user says **Setup Semantic Scout**
+
+You (the agent):
+
+1. Install this skill into `%USERPROFILE%\.cursor\skills\semantic-scout\SKILL.md` from `SKILL.md` in the clone.
+2. Confirm Atlassian + GitHub access in Cursor — ask once if missing.
+3. Tell them to try: **Semantic Scout for AN-XXXX** (their real ticket).
 
 ## Hard rules
 
