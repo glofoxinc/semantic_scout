@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#0A1628"/>
+  <rect width="1920" height="10" fill="#C9A227"/>
+  <rect y="1070" width="1920" height="10" fill="#C9A227"/>
+
+  <text x="80" y="58" fill="#C9A227" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="4">THIS SKILL</text>
+  <text x="80" y="118" fill="#F4E4A6" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="48" font-weight="700">Semantic Scout</text>
+  <text x="80" y="168" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="26">Rates Jira vs the branch. Lists missings. Suggests docs, dashboard, paginated, and bot comments ahead.</text>
+
+  <rect x="80" y="200" width="1760" height="3" fill="#C9A227"/>
+
+  <rect x="80" y="230" width="860" height="300" rx="8" fill="#12243C"/>
+  <text x="110" y="280" fill="#C9A227" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">BUSINESS PROBLEM</text>
+  <text x="110" y="330" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="21">PRs bounce for extra files, missing ticket work, or</text>
+  <text x="110" y="368" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="21">GitHub bots. Reviewers spend 20-40 minutes.</text>
+  <text x="110" y="406" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="21">The same chat is retyped. Slack fills up. The ticket</text>
+  <text x="110" y="444" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="21">looks done. The PR is not.</text>
+  <text x="110" y="500" fill="#F4E4A6" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="20">Cost: 20 to 40 minutes per PR, often twice.</text>
+
+  <rect x="980" y="230" width="860" height="300" rx="8" fill="#12243C"/>
+  <text x="1010" y="280" fill="#C9A227" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">WHAT THIS SOLVES</text>
+  <text x="1010" y="330" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="21">Rates Jira requirements and the branch before GitHub.</text>
+  <text x="1010" y="368" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="21">Lists missings. Suggests docs, dashboard vs paginated twins.</text>
+  <text x="1010" y="406" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="21">Shows likely bot comments. You choose whether to apply, then raise.</text>
+  <text x="1010" y="500" fill="#F4E4A6" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="20">Nothing opens on GitHub until you say so.</text>
+
+  <rect x="80" y="560" width="1760" height="230" rx="8" fill="#152A45"/>
+  <text x="110" y="615" fill="#C9A227" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">TIME YOU GET BACK</text>
+  <text x="110" y="675" fill="#F4E4A6" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="36" font-weight="700">About 15 to 30 minutes per ticket</text>
+  <text x="110" y="730" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="22">Review 5-10 min instead of 20-40. A week of 4 PRs is about 1-2 hours back, plus fewer tokens than a long generic review chat.</text>
+
+  <rect x="80" y="820" width="1760" height="220" rx="8" fill="#0F1E33" stroke="#C9A227" stroke-width="1.5"/>
+  <text x="110" y="875" fill="#C9A227" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">SETUP  (about 5 minutes, once)</text>
+  <text x="110" y="930" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="24">Clone the repo. In Cursor say:  Setup Semantic Scout</text>
+  <text x="110" y="980" fill="#E8EEF5" font-family="Calibri, Segoe UI, Arial, sans-serif" font-size="20">Cursor does the rest. If it needs GitHub or Jira access, it will ask. You answer. That is all.</text>
+</svg>
