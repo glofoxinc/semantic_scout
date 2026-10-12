@@ -15,4 +15,4 @@ Share pack for the **Semantic Scout** Cursor skill — rate Jira vs your branch 
 2. In Cursor chat: **Setup Semantic Scout**
 3. Prove it: **Semantic Scout for AN-XXXX** (your real ticket)
 
-Pair with **Semantic Forge** when the semantic model changed (private org repo or your team’s Forge clone).
+Pair with **[Semantic Forge](https://github.com/glofoxinc/semantic_forge)** when the semantic model changed.
