@@ -4,9 +4,10 @@ Share pack for the **Semantic Scout** Cursor skill — rate Jira vs your branch 
 
 | File | Purpose |
 |------|---------|
-| [DOCUMENTATION.html](DOCUMENTATION.html) | Team guide — open in a browser |
-| [share-image.svg](share-image.svg) | Hero image for Slack or decks |
-| [SKILL.md](SKILL.md) | Cursor skill — install once (below) |
+| [DOCUMENTATION.html](./DOCUMENTATION.html) | Team guide (source in repo) |
+| **Team guide (browser)** | https://glofoxinc.github.io/semantic_scout/DOCUMENTATION.html |
+| [share-image.svg](./share-image.svg) | Hero image for Slack or decks |
+| [SKILL.md](./SKILL.md) | Cursor skill — install once (below) |
 
 ## Setup (about 5 minutes, once)
 
@@ -14,4 +15,4 @@ Share pack for the **Semantic Scout** Cursor skill — rate Jira vs your branch 
 2. In Cursor chat: **Setup Semantic Scout**
 3. Prove it: **Semantic Scout for AN-XXXX** (your real ticket)
 
-Pair with **[Semantic Forge](https://github.com/glofoxinc/semantic-forge)** when the semantic model changed.
+Pair with **Semantic Forge** when the semantic model changed (private org repo or your team’s Forge clone).
