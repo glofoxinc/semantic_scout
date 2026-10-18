@@ -30,9 +30,10 @@ Then: **Semantic Scout for AN-XXXX** (your real ticket).
 1. **Public repo** (`semantic_scout`) — ship `docs/SKILL.md` + `scout/` MCP; keep full corpus and ticket R&D in internal dev repo.
 2. **Setup** — agent copies skill, merges `scout/config/cursor-mcp.example.json`, runs `scout_engine_health`.
 3. **Daily** — Jira (Atlassian MCP) + git diff + `scout_requirement_matrix` + `scout_gap_report` on the product clone.
-4. **Paginated tickets** — pair with Paginate Forge for standards; Scout scores **delivery** vs Jira separately.
+4. **Paginated tickets** — Scout scores **delivery vs Jira** from git; use Paginate Forge separately only when building or patching RDL.
 5. **Slack** — post intros via Slack MCP (`/invite @Cursor` in private channels); see team formatting rules.
-6. **Internal dev** — reconcile `semantic-scout` git history, commit libs/tests, regenerate public `scout/lib` on release tags only.
+6. **Internal dev** — `projects/stable/semantic-scout` is R&D/corpus only; **semantic_scout** on GitHub is the runtime source of truth.
+7. **Sign-off** — see [`SIGNOFF-v5.0.md`](./SIGNOFF-v5.0.md) after each major release.
 
 ## MCP tools
 
