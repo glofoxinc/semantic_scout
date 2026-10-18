@@ -9,7 +9,6 @@ from pathlib import Path
 from lib.jira_requirement_matrix import (
     build_requirement_matrix,
     format_matrix_markdown,
-    infer_artifact_glob_from_summary,
     load_jira_from_paginate,
     matrix_to_ticket_profile,
 )
@@ -25,9 +24,11 @@ def intake_from_text(
     artifact_glob: str = "**/*.rdl",
 ) -> dict:
     if artifact_glob in ("", "**/*.rdl"):
-        inferred = infer_artifact_glob_from_summary(summary, description)
-        if inferred:
-            artifact_glob = inferred
+        from lib.jira_requirement_matrix import infer_artifact_globs
+
+        inferred_list = infer_artifact_globs(summary, description)
+        if inferred_list:
+            artifact_glob = inferred_list[0]
     matrix = build_requirement_matrix(
         ticket_key=ticket_key,
         summary=summary,
@@ -35,7 +36,11 @@ def intake_from_text(
         comments_text=comments_text,
     )
     profile = matrix_to_ticket_profile(
-        ticket_key, summary, matrix, artifact_glob=artifact_glob
+        ticket_key,
+        summary,
+        matrix,
+        description=description,
+        artifact_glob=artifact_glob,
     )
     return {
         "ticket_key": ticket_key,

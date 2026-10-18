@@ -18,7 +18,10 @@ from lib.git_scope import format_scope_report, git_changed_files, git_diff_excer
 from lib.jira_repo_router import resolve_route
 from lib.scout_intake import intake_from_text
 from lib.signoff_gate import run_signoff_checks
+from lib.review_output import build_review_summary
 from lib.ticket_gap_report import format_ticket_list, run_bundle_report
+
+SCOUT_VERSION = "4.3.0"
 
 mcp = MCPServer("semantic-scout")
 
@@ -176,6 +179,7 @@ def scout_ticket_review(
     bundle_path: str | None = None,
     head_sha: str = "",
     circuit_reviewed_sha: str = "",
+    scope_mode: str = "ticket",
 ) -> str:
     """
     Full Semantic Scout run: matrix-backed profile, git scope, per-requirement evidence,
@@ -206,6 +210,7 @@ def scout_ticket_review(
         "diff_excerpt": diff_excerpt,
         "head_sha": head_sha or None,
         "circuit_reviewed_sha": circuit_reviewed_sha or None,
+        "scope_mode": scope_mode,
     }
     process_ctx: dict = {}
     if head_sha or circuit_reviewed_sha:
@@ -222,23 +227,39 @@ def scout_ticket_review(
 
     profile = intake["profile"]
     scope = profile.get("scope") or {}
-    in_scope = list(scope.get("in_scope") or [])
-    if profile.get("artifact_glob"):
-        in_scope.append(profile["artifact_glob"])
+    in_scope = list(dict.fromkeys(scope.get("in_scope") or []))
     violations = scope_violations(
         changed_paths,
         in_scope=in_scope,
         out_of_scope=list(scope.get("out_of_scope") or []),
+        scope_mode=scope_mode,
     )
 
     bot = run_bot_preflight(changed_paths, diff_excerpt)
+    circuit_stale = bool(
+        head_sha
+        and circuit_reviewed_sha
+        and head_sha != circuit_reviewed_sha
+    )
+    summary = build_review_summary(
+        ticket_key=ticket_key.strip().upper(),
+        matrix_markdown=intake["matrix_markdown"],
+        scope_violations=violations,
+        bot_predictions=bot.get("predictions") or [],
+        reports=reports,
+        changed_paths=changed_paths,
+        circuit_stale=circuit_stale,
+    )
 
     payload = {
         "ok": True,
+        "scout_version": SCOUT_VERSION,
         "ticket_key": ticket_key.strip().upper(),
+        "review": summary,
         "matrix_markdown": intake["matrix_markdown"],
         "scope_report": format_scope_report(violations),
         "bot_ahead_markdown": format_preflight_block(bot),
+        "bot_resolution_markdown": summary["bot_resolution_markdown"],
         "changed_paths": changed_paths,
         "gap_markdown": format_ticket_list(reports),
         "reports": [r.as_dict() for r in reports],

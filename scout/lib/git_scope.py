@@ -51,22 +51,54 @@ def _matches_any(path: str, patterns: list[str]) -> bool:
     return False
 
 
+def deliverable_name_roots(in_scope: list[str]) -> list[str]:
+    roots: list[str] = []
+    for pat in in_scope:
+        stem = Path(pat.replace("**/", "").replace("*/", "")).stem
+        if stem and stem not in ("*", "*.rdl"):
+            roots.append(stem.lower())
+    return roots
+
+
+def _is_bi_artifact(path: str) -> bool:
+    low = path.lower()
+    return any(
+        ext in low
+        for ext in (
+            ".rdl",
+            ".tmdl",
+            "report.json",
+            ".pbir",
+            ".paginatedreport/",
+            ".semanticmodel/",
+            ".report/",
+        )
+    )
+
+
 def scope_violations(
     changed_paths: list[str],
     *,
     in_scope: list[str],
     out_of_scope: list[str],
+    scope_mode: str = "ticket",
 ) -> list[dict[str, str]]:
     """
     Flag paths on the branch that Jira did not authorize.
-    in_scope entries are globs or path fragments from the ticket profile.
+    scope_mode:
+      ticket — other BI files on branch are warnings (multi-ticket branches)
+      strict — every changed BI path must match in_scope
     """
     violations: list[dict[str, str]] = []
     if not changed_paths:
         return violations
 
+    roots = deliverable_name_roots(in_scope)
+    strict = scope_mode == "strict"
+
     for path in changed_paths:
         norm = path.replace("\\", "/")
+        low = norm.lower()
         if out_of_scope and _matches_any(norm, out_of_scope):
             violations.append(
                 {
@@ -76,18 +108,24 @@ def scope_violations(
                 }
             )
             continue
+        if any(seg in low for seg in (".gitignore", "readme", "license", ".github/")):
+            continue
+        if not _is_bi_artifact(norm):
+            continue
+        if in_scope and _matches_any(norm, in_scope):
+            continue
+        if roots and any(root in low for root in roots):
+            continue
         if in_scope and not _matches_any(norm, in_scope):
-            # Allow common non-deliverable noise only when empty in_scope
-            if any(
-                seg in norm.lower()
-                for seg in (".gitignore", "readme", "license")
-            ):
-                continue
             violations.append(
                 {
                     "path": norm,
-                    "reason": "Not listed in ticket in_scope — verify Jira or revert before PR",
-                    "severity": "blocker",
+                    "reason": (
+                        "Not this ticket's deliverable — split PR or confirm bundle ticket"
+                        if not strict
+                        else "Not listed in ticket in_scope — revert before PR"
+                    ),
+                    "severity": "blocker" if strict else "info",
                 }
             )
     return violations

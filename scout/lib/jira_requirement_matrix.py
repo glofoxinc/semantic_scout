@@ -186,6 +186,23 @@ def infer_artifact_glob_from_summary(summary: str, description: str = "") -> str
     return None
 
 
+def infer_artifact_globs(summary: str, description: str = "") -> list[str]:
+    """All deliverable globs mentioned in Jira (multi-report tickets)."""
+    text = f"{summary}\n{description or ''}"
+    globs: list[str] = []
+    for match in re.finditer(r"[-–]\s*(.+?)\s*\(paginated\)", text, re.I):
+        name = match.group(1).strip()
+        if name and len(name) < 120:
+            g = f"**/{name}.rdl"
+            if g not in globs:
+                globs.append(g)
+    if not globs:
+        single = infer_artifact_glob_from_summary(summary, description)
+        if single:
+            globs.append(single)
+    return globs
+
+
 def build_requirement_matrix(
     *,
     ticket_key: str,
@@ -233,8 +250,12 @@ def matrix_to_ticket_profile(
     summary: str,
     matrix: list[MatrixRequirement],
     *,
+    description: str = "",
     artifact_glob: str = "**/*.rdl",
 ) -> dict[str, Any]:
+    globs = infer_artifact_globs(summary, description)
+    if artifact_glob in ("", "**/*.rdl") and globs:
+        artifact_glob = globs[0]
     requirements: list[dict[str, Any]] = []
     out_scope: list[str] = []
     for row in matrix:
@@ -265,19 +286,22 @@ def matrix_to_ticket_profile(
         rid = r["id"]
         if rid not in deduped:
             deduped[rid] = r
-    return {
+    profile: dict[str, Any] = {
         "key": ticket_key,
         "summary": summary,
         "artifact_glob": artifact_glob,
         "scope": {
             "deliverable": summary,
-            "in_scope": [artifact_glob],
+            "in_scope": globs if globs else [artifact_glob],
             "in_scope_requirements": [r.text for r in matrix if r.in_scope],
             "out_of_scope": out_scope,
         },
         "requirements": list(deduped.values()),
         "requirement_matrix": [r.as_dict() for r in matrix],
     }
+    if len(globs) > 1:
+        profile["artifact_globs"] = globs
+    return profile
 
 
 def format_matrix_markdown(ticket_key: str, summary: str, matrix: list[MatrixRequirement]) -> str:

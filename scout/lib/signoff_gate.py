@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 from lib.jira_requirement_matrix import (
@@ -50,6 +49,27 @@ def run_matrix_generic_smoke() -> tuple[bool, str]:
     return True, f"generic matrix OK ({len(matrix)} rows, no country auto-bind)"
 
 
+def run_country_column_rdl_smoke() -> tuple[bool, str]:
+    from lib.rdl_checks import country_column_first_ok
+
+    mini = """
+    <Tablix Name="Tablix1"><TablixBody><TablixRows><TablixRow>
+    <Textbox><Value>Country</Value></Textbox>
+    <Textbox><Value>=Fields!country.Value</Value></Textbox>
+    </TablixRow></TablixRows></TablixBody></Tablix>
+    """
+    if not country_column_first_ok(mini):
+        return False, "mini RDL country column check failed"
+    prod = Path(
+        r"C:\Users\LYal01\gf-insights-fitnessbi\New Members - Details.PaginatedReport\New Members - Details.rdl"
+    )
+    if prod.is_file():
+        if not country_column_first_ok(prod.read_text(encoding="utf-8-sig")):
+            return False, "New Members - Details.rdl failed country_column_first_ok"
+        return True, "mini + production New Members column OK"
+    return True, "mini RDL OK (production path not on machine)"
+
+
 def run_artifact_glob_smoke() -> tuple[bool, str]:
     g = infer_artifact_glob_from_summary(
         "Add Country filter and column - New Members - Details (paginated)",
@@ -79,6 +99,7 @@ def run_signoff_checks() -> dict:
     for name, fn in (
         ("country_ticket_matrix", run_matrix_country_smoke),
         ("generic_ticket_matrix", run_matrix_generic_smoke),
+        ("country_column_rdl", run_country_column_rdl_smoke),
         ("artifact_glob_infer", run_artifact_glob_smoke),
         ("requirement_evaluator", run_requirement_eval_smoke),
     ):

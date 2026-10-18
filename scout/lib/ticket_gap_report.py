@@ -203,12 +203,15 @@ def _wants_doc_checks(req_ids: set[str], requirement_texts: list[str]) -> bool:
     return any("document" in t.lower() for t in requirement_texts)
 
 
-def _wants_filter_on_table_checks(req_ids: set[str]) -> bool:
+def _wants_filter_on_table_checks(req_ids: set[str], requirement_texts: list[str]) -> bool:
     if not req_ids:
         return False
-    if req_ids & {"country_filter", "payment_method_param", "charge_type_param"}:
+    if req_ids & {"payment_method_param", "charge_type_param"}:
         return True
-    return any("filter" in rid for rid in req_ids)
+    return any(
+        "column" in t.lower() and "filter" in t.lower()
+        for t in requirement_texts
+    )
 
 
 def _country_doc_explained(text: str) -> bool:
@@ -238,7 +241,7 @@ def analyze_rdl_engineering(
     texts = requirement_texts or []
     country_ticket = _wants_country_checks(ids)
     doc_ticket = _wants_doc_checks(ids, texts)
-    filter_table_ticket = _wants_filter_on_table_checks(ids)
+    filter_table_ticket = _wants_filter_on_table_checks(ids, texts)
 
     checks["has_country_param"] = bool(
         re.search(r'<ReportParameter Name="Country"', text)
@@ -258,16 +261,15 @@ def analyze_rdl_engineering(
     member_count = _tablix_column_hierarchy_member_count(text)
     checks["tablix_hierarchy_balanced"] = col_count > 0 and col_count == member_count
 
-    headers = _first_tablix_header_labels(text)
-    checks["country_column_first"] = bool(headers and headers[0].lower() == "country")
+    from lib.rdl_checks import country_column_first_ok, country_filter_in_sql
+
+    checks["country_column_first"] = country_column_first_ok(text)
 
     checks["date_guard"] = "@StartDate" in text and "@EndDate" in text and (
         "@StartDate <= @EndDate" in text or "StartDate.Value" in text
     )
     checks["error_banner"] = "ErrorBanner" in text or "Invalid date range" in text
     checks["no_rows_message"] = "NoRowsMessage" in text
-
-    from lib.paginate_country_pattern import country_filter_in_sql
 
     cascade_ok = False
     for param in ("Branches", "Clubs"):
@@ -309,7 +311,12 @@ def analyze_rdl_engineering(
     gaps.extend(filter_gaps)
 
     has_country = country_ticket and 'ReportParameter Name="Country"' in text
-    if country_ticket and has_country and not checks["null_country_sentinel"]:
+    if (
+        country_ticket
+        and "country_column_first" in ids
+        and has_country
+        and not checks["null_country_sentinel"]
+    ):
         gaps.append(
             Gap(
                 kind="engineering",
@@ -444,8 +451,19 @@ def _country_sentence_is_specific(definition: str) -> bool:
 
 
 _SCOPE_FILTER_PARAMS = frozenset({
-    "startdate", "enddate", "branches", "clubs", "branch", "location",
-    "userid", "userclublist", "schedulingcycle",
+    "startdate",
+    "enddate",
+    "branches",
+    "clubs",
+    "branch",
+    "location",
+    "userid",
+    "userclublist",
+    "schedulingcycle",
+    "source",
+    "jointype",
+    "join_type",
+    "country",
 })
 _SQL_WORDS = frozenset({
     "coalesce", "nullif", "ltrim", "rtrim", "and", "or", "where", "case",
@@ -767,7 +785,8 @@ def _score_branch(gaps: list[Gap], artifact_exists: bool) -> int:
 
 
 def _is_delivery_gap(g: Gap) -> bool:
-    return g.kind in ("jira_ac", "engineering", "process", "bot")
+    """Ticket delivery only — bot-ahead is separate (see review.bot_resolution)."""
+    return g.kind in ("jira_ac", "engineering", "process")
 
 
 def _ready_for_pr(jira: int, delivery: int, delivery_gaps: list[Gap]) -> bool:
@@ -922,7 +941,7 @@ def evaluate_ticket_profile(
     process_ctx: dict[str, Any] | None = None,
     branch_ctx: dict[str, Any] | None = None,
 ) -> TicketReport:
-    from lib.bot_preflight import run_bot_preflight, scan_engineering_patterns
+    from lib.bot_preflight import run_bot_preflight
     from lib.git_scope import git_changed_files, git_diff_excerpt, scope_violations
     from lib.jira_scope_contract import build_scope_contract
     from lib.requirement_evidence import build_checks_bundle, evaluate_all_requirements
@@ -949,22 +968,32 @@ def evaluate_ticket_profile(
             diff_excerpt = git_diff_excerpt(repo_root, str(base_ref))
 
     scope = profile.get("scope") or {}
-    in_scope: list[str] = list(scope.get("in_scope") or [])
+    in_scope: list[str] = list(dict.fromkeys(scope.get("in_scope") or []))
     for g in profile.get("artifact_globs") or []:
-        in_scope.append(str(g))
-    if profile.get("artifact_glob"):
+        if g not in in_scope:
+            in_scope.append(str(g))
+    if profile.get("artifact_glob") and profile["artifact_glob"] not in in_scope:
         in_scope.append(str(profile["artifact_glob"]))
     out_scope = list(scope.get("out_of_scope") or [])
     if bundle:
         out_scope.extend(bundle.get("default_out_of_scope") or [])
+    scope_mode = str(bctx.get("scope_mode") or "ticket")
     if changed_paths and in_scope:
         for viol in scope_violations(
-            changed_paths, in_scope=in_scope, out_of_scope=out_scope
+            changed_paths,
+            in_scope=in_scope,
+            out_of_scope=out_scope,
+            scope_mode=scope_mode,
         ):
+            sev = viol["severity"]
+            if sev == "info":
+                gap_sev: Literal["blocker", "gap", "info"] = "info"
+            else:
+                gap_sev = "blocker" if sev == "blocker" else "gap"
             gaps.append(
                 Gap(
                     kind="process",
-                    severity="blocker" if viol["severity"] == "blocker" else "gap",
+                    severity=gap_sev,
                     issue=f"Out-of-scope path on branch: {viol['path']}",
                     detail=viol["reason"],
                     fix_hint="Revert path or get Jira scope amendment before PR.",
@@ -997,17 +1026,6 @@ def evaluate_ticket_profile(
         req_texts = [str(r.get("text") or "") for r in req_list]
         checks, eng_gaps = build_checks_bundle(artifacts, req_id_set, req_texts)
         gaps.extend(eng_gaps)
-        for art in artifacts:
-            for hit in scan_engineering_patterns(_read_text(art), art.name):
-                gaps.append(
-                    Gap(
-                        kind=hit["kind"],
-                        severity=hit["severity"],
-                        issue=hit["issue"],
-                        detail=hit["detail"],
-                        fix_hint=hit.get("fix_hint", ""),
-                    )
-                )
         requirements_out = evaluate_all_requirements(
             req_list,
             artifacts=artifacts,

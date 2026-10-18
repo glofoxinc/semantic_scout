@@ -72,7 +72,8 @@ def scan_engineering_patterns(
         if "tablixcolumn" in det.replace(" ", "") and "tablixmember" in det.replace(" ", ""):
             pass  # handled by structural tablix check
         if p.get("id") == "null_country_branches":
-            if "in (@country)" in low and "coalesce(country" not in low.replace(" ", ""):
+            normalized = low.replace(" ", "")
+            if "in(@country)" in normalized and "coalesce(country" not in normalized:
                 matched = True
         if matched:
             hits.append(

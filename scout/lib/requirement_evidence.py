@@ -4,30 +4,15 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from lib.rdl_checks import country_filter_in_sql
 from lib.ticket_gap_report import (
     RequirementResult,
     RequirementStatus,
     _country_doc_explained,
     _documentation_client_gaps,
-    _documentation_values,
-    _filter_field_table_gaps,
-    _first_tablix_header_labels,
-    _main_tablix_block,
     _read_text,
-    _tablix_column_count,
-    _tablix_column_hierarchy_member_count,
     analyze_rdl_engineering,
 )
-
-_COUNTRY_IN_SQL = re.compile(
-    r"coalesce\s*\(\s*(?:[a-z_][\w]*\.)?country\s*,\s*n?'\(blank\)'\s*\)\s+in\s*\(\s*@country\s*\)"
-    r"|(?:[a-z_][\w]*\.)?country\s+in\s*\(\s*@country\s*\)",
-    re.I,
-)
-
-
-def _country_filter_in_sql(sql: str) -> bool:
-    return bool(_COUNTRY_IN_SQL.search(sql or ""))
 
 
 def build_checks_bundle(
