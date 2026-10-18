@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "semantic-scout": {
+      "command": "python",
+      "args": ["<CLONE_PATH>/scout/mcp/server.py"],
+      "env": {}
+    }
+  }
+}

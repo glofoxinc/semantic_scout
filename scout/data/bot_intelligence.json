@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "description": "Generic PR/bot patterns — engineering delivery, not Paginate catalogue debt",
+  "patterns": [
+    {
+      "id": "null_country_branches",
+      "kind": "engineering",
+      "severity": "blocker",
+      "title": "NULL country branches excluded from Country filter",
+      "detection": "country IN (@Country) without COALESCE(country, N'(blank)') in prm_Country / branches CTE",
+      "fix_hint": "COALESCE(country, N'(blank)') in parameter dataset and branch list SQL"
+    },
+    {
+      "id": "tablix_member_mismatch",
+      "kind": "engineering",
+      "severity": "blocker",
+      "title": "TablixColumn count vs TablixColumnHierarchy members",
+      "detection": "TablixColumn count != empty TablixMember count in column hierarchy",
+      "fix_hint": "Add one TablixMember per column; adjust tablix and page width"
+    },
+    {
+      "id": "country_branch_cascade",
+      "kind": "engineering",
+      "severity": "gap",
+      "title": "Branch picker not filtered by Country",
+      "detection": "Branches/Clubs parameter dataset SQL lacks @Country when product expects cascade",
+      "fix_hint": "Scope branch list SQL with IN (@Country) using same COALESCE sentinel"
+    },
+    {
+      "id": "stale_circuit_review",
+      "kind": "process",
+      "severity": "gap",
+      "title": "Bot review older than PR head commit",
+      "detection": "circuit_reviewed_sha != head_sha",
+      "fix_hint": "Re-request /circuit review on latest commit"
+    },
+    {
+      "id": "pbrs_not_run",
+      "kind": "process",
+      "severity": "gap",
+      "title": "Paginated export not manually verified",
+      "detection": "pbrs_signed_off false",
+      "fix_hint": "Run PDF/Excel in PBRS; confirm filters and first column"
+    },
+    {
+      "id": "circuit_informational_none",
+      "kind": "process",
+      "severity": "info",
+      "title": "Circuit inline finding with Consequence: None (no code change)",
+      "detection": "abc-circuit body contains 'Consequence: None' or title starts with 'None:' and describes matching normalization",
+      "fix_hint": "Reply on thread acknowledging parity; resolve thread. Do not rewrite SQL unless QA shows empty filter results."
+    },
+    {
+      "id": "circuit_check_red_info_only",
+      "kind": "process",
+      "severity": "info",
+      "title": "Circuit PR check failed but only informational findings",
+      "detection": "Circuit PR review check conclusion failure with 1 finding and Low Risk summary",
+      "fix_hint": "Treat as process green for merge after human reply; chase approvers not new commits."
+    },
+    {
+      "id": "sales_param_coalesce_parity",
+      "kind": "engineering",
+      "severity": "info",
+      "title": "Payment Method / Charge Type param list vs MainQuery COALESCE",
+      "detection": "Revenue Sales .rdl adds prm_PaymentMethod/prm_ChargeType with Not specified sentinel",
+      "fix_hint": "Before PR: confirm same COALESCE(NULLIF(LTRIM(RTRIM(...)) in param dataset and MainQuery WHERE; if aligned, pre-empt Circuit reply text."
+    }
+  ],
+  "catalogue_not_delivery": [
+    "tablix_column_order",
+    "identity_header_mismatch",
+    "doc_tablix_order_mismatch",
+    "documentation_column_drift",
+    "join_type_vs_member_type",
+    "error_banner_on_no_date_report"
+  ]
+}

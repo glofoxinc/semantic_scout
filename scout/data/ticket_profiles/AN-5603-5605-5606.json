@@ -1,0 +1,113 @@
+{
+  "schema_version": 2,
+  "bundle_id": "AN-5603-5605-5606",
+  "repo": "glofoxinc/gf-insights-fitnessbi",
+  "default_ignore_standards_ids": [
+    "date_defaults_from_logic_mismatch",
+    "missing_vertical_align",
+    "page_width_out_of_range",
+    "dataset_overlap",
+    "mainquery_missing_business_params",
+    "country_branch_dataset_drift",
+    "identity_no_ticket"
+  ],
+  "default_out_of_scope": [
+    "Power BI dashboard (.Report / report.json)",
+    "Semantic model (.tmdl)",
+    "Gold layer notebooks / lakehouse SQL not named in Jira",
+    "New paginated report files not listed in AC"
+  ],
+  "tickets": [
+    {
+      "key": "AN-5603",
+      "summary": "Add Country filter - New Members - Details (paginated)",
+      "artifact_glob": "**/New Members - Details.rdl",
+      "scope": {
+        "deliverable": "Paginated New Members - Details: Country multi-select filter, all countries default.",
+        "in_scope": ["**/New Members - Details.rdl"],
+        "out_of_scope": ["New Members dashboard", "Glofox Semantic Model v5.0"]
+      },
+      "requirements": [
+        {
+          "id": "country_filter",
+          "text": "Add Country as a multi-value filter on New Members - Details paginated report",
+          "must_have": true
+        },
+        {
+          "id": "default_all_countries",
+          "text": "All countries selected by default",
+          "must_have": true
+        },
+        {
+          "id": "doc_country_filter",
+          "text": "Documentation explains Country filter (branch country, all countries default)",
+          "must_have": true
+        }
+      ]
+    },
+    {
+      "key": "AN-5605",
+      "summary": "Add Country filter and column - New Members - Details (paginated)",
+      "artifact_glob": "**/New Members - Details.rdl",
+      "scope": {
+        "deliverable": "Same RDL as AN-5603 plus Country as first grid column.",
+        "in_scope": ["**/New Members - Details.rdl"],
+        "out_of_scope": ["New Members dashboard", "Glofox Semantic Model v5.0"]
+      },
+      "requirements": [
+        {
+          "id": "country_filter",
+          "text": "Add Country filter on New Members - Details paginated report",
+          "must_have": true
+        },
+        {
+          "id": "country_column_first",
+          "text": "Add Country as the first column on the report grid",
+          "must_have": true
+        },
+        {
+          "id": "default_all_countries",
+          "text": "All countries selected by default",
+          "must_have": true
+        },
+        {
+          "id": "doc_country_filter",
+          "text": "Documentation explains Country filter (branch country, all countries default)",
+          "must_have": true
+        }
+      ]
+    },
+    {
+      "key": "AN-5606",
+      "summary": "Add Country filter and column - New Memberships - Continuing (paginated)",
+      "artifact_glob": "**/New Memberships - Continuing.rdl",
+      "scope": {
+        "deliverable": "New Memberships - Continuing paginated: Country filter, Country first column, all countries default.",
+        "in_scope": ["**/New Memberships - Continuing.rdl"],
+        "out_of_scope": ["Continuing dashboard if any", "Semantic model"]
+      },
+      "requirements": [
+        {
+          "id": "country_filter",
+          "text": "Add Country filter on New Memberships - Continuing paginated report",
+          "must_have": true
+        },
+        {
+          "id": "country_column_first",
+          "text": "Add Country as the first column on the report grid",
+          "must_have": true
+        },
+        {
+          "id": "default_all_countries",
+          "text": "All countries selected by default",
+          "must_have": true
+        },
+        {
+          "id": "doc_country_filter",
+          "text": "Documentation explains Country filter (branch country, all countries default)",
+          "must_have": true
+        }
+      ]
+    }
+  ]
+}

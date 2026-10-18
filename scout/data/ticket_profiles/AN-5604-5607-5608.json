@@ -1,0 +1,123 @@
+{
+  "schema_version": 2,
+  "bundle_id": "AN-5604-5607-5608",
+  "paginate_learnings": "paginate-platform/workspace/knowledge/standards/mcp-canonical/learnings-AN-5603-5608-country-batch.md",
+  "paginate_parameter_layout": "paginate-platform/workspace/knowledge/standards/mcp-canonical/learnings-parameter-layout-AN-5603-5608.md",
+  "automated_guards": [
+    "check_rls_datasource_no_lakehouse",
+    "check_tablix_fields_in_mainquery",
+    "check_sales_picklist_scope",
+    "check_sql_filters_after_order_by",
+    "check_filter_field_on_table",
+    "check_filter_column_beside_category"
+  ],
+  "repo": "glofoxinc/gf-insights-fitnessbi",
+  "pr": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/542",
+  "branch": "feature/AN-5604-5607-5608-paginated-filters",
+  "default_out_of_scope": [
+    "Power BI dashboard (.Report / report.json)",
+    "Semantic model (.tmdl)",
+    "Gold layer notebooks"
+  ],
+  "tickets": [
+    {
+      "key": "AN-5604",
+      "summary": "Country filter and Currently has a membership — Lost Members Details",
+      "artifact_glob": "**/Attrition Analysis - Lost Members Details.rdl",
+      "requirements": [
+        {
+          "id": "country_filter",
+          "text": "Add Country filter at top; all countries selected by default (Eoin 2026-10-14).",
+          "must_have": true
+        },
+        {
+          "id": "country_column_first",
+          "text": "Add Country as first column (consistent with other country tickets — Eoin 2026-10-14).",
+          "must_have": true
+        },
+        {
+          "id": "default_all_countries",
+          "text": "All countries selected by default, matching the other Country filters on this branch.",
+          "must_have": true
+        },
+        {
+          "id": "membership_column",
+          "text": "Add Currently has a membership as the last column, Yes or No.",
+          "must_have": true
+        },
+        {
+          "id": "membership_default_no",
+          "text": "The membership filter opens on No.",
+          "must_have": true
+        },
+        {
+          "id": "documentation_clear",
+          "text": "Documentation page explains the Country filter and what Currently has a membership means.",
+          "must_have": true
+        }
+      ]
+    },
+    {
+      "key": "AN-5607",
+      "summary": "Country filter and Country column — Expiring Member Details",
+      "artifact_glob": "**/Attrition Analysis - Expiring Member Details.rdl",
+      "requirements": [
+        {
+          "id": "country_filter",
+          "text": "Add a Country filter.",
+          "must_have": true
+        },
+        {
+          "id": "country_column_first",
+          "text": "Add Country as the first column.",
+          "must_have": true
+        },
+        {
+          "id": "default_all_countries",
+          "text": "All countries selected by default.",
+          "must_have": true
+        },
+        {
+          "id": "documentation_clear",
+          "text": "Documentation page says Country is the branch's country, not the member's country.",
+          "must_have": true
+        }
+      ]
+    },
+    {
+      "key": "AN-5608",
+      "summary": "Payment Method and Charge Type — Sales by Items and Sales by Transactions",
+      "artifact_globs": [
+        "**/Revenue Analysis - Sales by Items.rdl",
+        "**/Revenue Analysis - Sales by Transactions.rdl"
+      ],
+      "requirements": [
+        {
+          "id": "payment_method_param",
+          "text": "Payment Method filter on both sales reports; all options default selected.",
+          "must_have": true
+        },
+        {
+          "id": "charge_type_param",
+          "text": "Charge Type filter on both sales reports; all options default selected.",
+          "must_have": true
+        },
+        {
+          "id": "payment_method_column",
+          "text": "Payment Method column after Revenue Stream Type (Eoin 2026-10-14 — filters + columns).",
+          "must_have": true
+        },
+        {
+          "id": "charge_type_column",
+          "text": "Charge Type column after Payment Method on both sales reports.",
+          "must_have": true
+        },
+        {
+          "id": "documentation_clear",
+          "text": "Both documentation pages explain Payment Method and Charge Type, and Transactions says the Payment Type column can differ from the filter.",
+          "must_have": true
+        }
+      ]
+    }
+  ]
+}

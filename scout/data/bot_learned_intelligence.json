@@ -1,0 +1,942 @@
+{
+  "schema_version": 1,
+  "source": "pr-bot-corpus/details",
+  "prs_with_bot_analyzed": 255,
+  "unique_patterns": 30,
+  "bot_comments_by_source": {
+    "cursor[bot]": 586,
+    "abc-circuit[bot]": 38
+  },
+  "repos_with_most_bot_prs": {
+    "glofoxinc/gf-insights-fitnessbi": 115,
+    "glofoxinc/abc-customize-insights-jetts": 32,
+    "glofoxinc/abc-customize-insights-lift": 31,
+    "glofoxinc/abc-customize-insights-jazzercise": 19,
+    "glofoxinc/gf-fabric-fitnessbi": 16,
+    "glofoxinc/abc-customize-insights-xtremefitness": 12,
+    "glofoxinc/abc-customize-f45-SK": 8,
+    "glofoxinc/abc-customize-ClisteHospitality": 5,
+    "glofoxinc/abc-customize-insights-fit4mom": 5,
+    "glofoxinc/abc-customize-insights-xpo": 5
+  },
+  "patterns": [
+    {
+      "pattern_id": "0a6e9fb11d80",
+      "support_count": 3,
+      "representative_title": "Malformed font family string with extra quotes",
+      "why_it_happens": "The `fontFamily` value in `advancedSlicerVisual` has extra single quotes wrapping the entire value (`'''Segoe UI Semibold'', ...sans-serif'`), unlike the correctly formatted identical property in `cardVisual` (`'Segoe UI Semibold', ...sans-serif`).",
+      "preventive_action": "Diff theme JSON vs sibling visuals; fix extra quotes before PR (slicer vs card pattern).",
+      "bot_sources": {
+        "cursor[bot]": 3
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "report.json"
+      ],
+      "path_signals": [
+        "measures and definitions.report/staticresources/sharedresources/basethemes/cy26su02.json"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-ChinMusic/pull/1",
+          "repo": "glofoxinc/abc-customize-ChinMusic",
+          "number": 1
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xtremefitness/pull/25",
+          "repo": "glofoxinc/abc-customize-insights-xtremefitness",
+          "number": 25
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xtremefitness/pull/28",
+          "repo": "glofoxinc/abc-customize-insights-xtremefitness",
+          "number": 28
+        }
+      ]
+    },
+    {
+      "pattern_id": "d703452ed75b",
+      "support_count": 3,
+      "representative_title": "Stale pivot measure query references",
+      "why_it_happens": "The branch pivot binds `PM: Members Added` and `PM: Members Churned` in the field definition but keeps `queryRef` and column-formatting metadata on `All Measures.PM: New Members` and `All Measures.PM: Lost Members`, which are not in the Jetts semantic model.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 3
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "report.json"
+      ],
+      "path_signals": [
+        "@hide_membership performance (jetts).report/definition/pages/reportsection/visuals/1a5208a97606896a46de/visual.json"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jetts/pull/100",
+          "repo": "glofoxinc/abc-customize-insights-jetts",
+          "number": 100
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jetts/pull/92",
+          "repo": "glofoxinc/abc-customize-insights-jetts",
+          "number": 92
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jetts/pull/97",
+          "repo": "glofoxinc/abc-customize-insights-jetts",
+          "number": 97
+        }
+      ]
+    },
+    {
+      "pattern_id": "08be880da44f",
+      "support_count": 3,
+      "representative_title": "Body height blank-page regression",
+      "why_it_happens": "Body `Height` changed from `2in` to `8.99167in`, and `PageHeight` was removed.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 3
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl"
+      ],
+      "path_signals": [
+        "payouts - transaction details.paginatedreport/payouts - transaction details.rdl",
+        "payouts - item details.paginatedreport/payouts - item details.rdl",
+        "payments - direct debit cancellation.paginatedreport/payments - direct debit cancellation.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/490",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 490
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/492",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 492
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/496",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 496
+        }
+      ]
+    },
+    {
+      "pattern_id": "b36940b17c56",
+      "support_count": 3,
+      "representative_title": "New members double-count mixed states",
+      "why_it_happens": "`membership_user_months` treats `membership_state` as part of the distinct grain, so a user with both `FIRST-TIME` and `RETURNING` starts in the same branch-month is counted twice in `new_members`.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 3
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl"
+      ],
+      "path_signals": [
+        "acquisition kpis.paginatedreport/acquisition kpis.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/513",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 513
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/514",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 514
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/524",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 524
+        }
+      ]
+    },
+    {
+      "pattern_id": "bc6acb1d64e7",
+      "support_count": 2,
+      "representative_title": "Stale filter references old entity after migration",
+      "why_it_happens": "The \"Top 5 Membership by Net Sale\" chart's visual query was migrated to use `Sales Transactions` and `All Measures`, but the filter at ordinal 0 still references the old `agg_sales_person_metrics` entity with property `SalesPerson - Analysis - #SUM Net Sale Including Tax`.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "report.json"
+      ],
+      "path_signals": [
+        "f45 sk fbupyeong executive standard dashboard.report/definition/pages/4ee70058e0058557de12/visuals/be101e1b37db0c097b95/visual.json",
+        "f45 sk fbupyeong executive standard dashboard.report/definition/pages/4ee70058e0058557de12/visuals/a8c09eb2008d4a5c4710/visual.json"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-f45-SK/pull/8",
+          "repo": "glofoxinc/abc-customize-f45-SK",
+          "number": 8
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-f45-SK/pull/8",
+          "repo": "glofoxinc/abc-customize-f45-SK",
+          "number": 8
+        }
+      ]
+    },
+    {
+      "pattern_id": "a4ab480e40e4",
+      "support_count": 2,
+      "representative_title": "MAX('DATE TABLE'[FullDate]) inside the SUMX row context has no filter transition, so the WEEKDAY/EOMONTH check evaluates against the whole date table's latest date rather than the row's month.",
+      "why_it_happens": "Bot flagged a structural or semantic issue in BI artifacts (see title).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "abc-circuit[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "date"
+      ],
+      "path_signals": [],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-energiefitness/pull/40",
+          "repo": "glofoxinc/abc-customize-insights-energiefitness",
+          "number": 40
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-energiefitness/pull/40",
+          "repo": "glofoxinc/abc-customize-insights-energiefitness",
+          "number": 40
+        }
+      ]
+    },
+    {
+      "pattern_id": "c0dd2916f931",
+      "support_count": 2,
+      "representative_title": "Total Royalty Amount misdefined",
+      "why_it_happens": "`Royalties: Total Royalty Amount` applies the same blank `hq_transfer_payout_id` filter and `REMOVEFILTERS` on date and payout status as the unassigned KPI measures, so it totals only royalties not on an HQ payout\u2014not all royalty amount.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".tmdl",
+        "date"
+      ],
+      "path_signals": [
+        "jazzercise custom semantic model.semanticmodel/definition/tables/all measures.tmdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jazzercise/pull/35",
+          "repo": "glofoxinc/abc-customize-insights-jazzercise",
+          "number": 35
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jazzercise/pull/37",
+          "repo": "glofoxinc/abc-customize-insights-jazzercise",
+          "number": 37
+        }
+      ]
+    },
+    {
+      "pattern_id": "bd0ee5de7a45",
+      "support_count": 2,
+      "representative_title": "Bookmark references missing measure",
+      "why_it_happens": "Advanced-filter bookmarks sort the branch pivot using `Count Total Members`, which is not defined in the Jetts semantic model.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "report.json"
+      ],
+      "path_signals": [
+        "@hide_membership performance (jetts).report/definition/bookmarks/bookmark5eca722035491b2deb0c.bookmark.json",
+        "@hide_membership performance (jetts).report/definition/bookmarks/bookmarkb8013ddb963396d62ead.bookmark.json"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jetts/pull/101",
+          "repo": "glofoxinc/abc-customize-insights-jetts",
+          "number": 101
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jetts/pull/95",
+          "repo": "glofoxinc/abc-customize-insights-jetts",
+          "number": 95
+        }
+      ]
+    },
+    {
+      "pattern_id": "19c26fdcdbb4",
+      "support_count": 2,
+      "representative_title": "in this change; each is posted as an inline comment.\n>\n>",
+      "why_it_happens": "Bot flagged a structural or semantic issue in BI artifacts (see title).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "abc-circuit[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [],
+      "path_signals": [],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jetts/pull/115",
+          "repo": "glofoxinc/abc-customize-insights-jetts",
+          "number": 115
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/537",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 537
+        }
+      ]
+    },
+    {
+      "pattern_id": "524338c1e240",
+      "support_count": 2,
+      "representative_title": "Transaction bookmark matches Member",
+      "why_it_happens": "KPI/filter change without documentation page alignment.",
+      "preventive_action": "Update Measures & Definitions / paginated doc page to match AC before PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "report.json",
+        "documentation"
+      ],
+      "path_signals": [
+        "@hide_membership performance (jetts).report/definition/bookmarks/bookmarke40f4706c384e47507d0.bookmark.json",
+        "@hide_membership performance (jetts).report/definition/bookmarks/bookmark1289931b575dacc80e43.bookmark.json"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jetts/pull/95",
+          "repo": "glofoxinc/abc-customize-insights-jetts",
+          "number": 95
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-jetts/pull/97",
+          "repo": "glofoxinc/abc-customize-insights-jetts",
+          "number": 97
+        }
+      ]
+    },
+    {
+      "pattern_id": "9fa0c90a9d51",
+      "support_count": 2,
+      "representative_title": "Null membership flags become No",
+      "why_it_happens": "`is_first_time`, `is_returning_after_time_period`, and `is_returning_within_time_period` use simple `CASE` with `ELSE N'No'` after a `LEFT JOIN` to `flt_new_memberships_with_users`.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl"
+      ],
+      "path_signals": [
+        "snap apac medallia.paginatedreport/snap apac medallia.rdl",
+        "snap americas medallia.paginatedreport/snap americas medallia.rdl",
+        "snap emea medallia.paginatedreport/snap emea medallia.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/16",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 16
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/17",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "pattern_id": "791beb6ea8d9",
+      "support_count": 2,
+      "representative_title": "This review is part of an evaluation. Please provide feedback in",
+      "why_it_happens": "Bot flagged a structural or semantic issue in BI artifacts (see title).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "abc-circuit[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [],
+      "path_signals": [],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/28",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 28
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/32",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 32
+        }
+      ]
+    },
+    {
+      "pattern_id": "676f4b8fe493",
+      "support_count": 2,
+      "representative_title": "Evaluation notice:",
+      "why_it_happens": "Bot flagged a structural or semantic issue in BI artifacts (see title).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "abc-circuit[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [],
+      "path_signals": [],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/34",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 34
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/261",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 261
+        }
+      ]
+    },
+    {
+      "pattern_id": "b9781a7a1399",
+      "support_count": 2,
+      "representative_title": "Net Billing advanced-filter bookmarks reset the date slicer to stale Oct 2024 dates and reference fields that do not exist in the new semantic model",
+      "why_it_happens": "Bookmark state captures stale slicer dates or wrong field refs.",
+      "preventive_action": "Re-record bookmarks after date/default fixes; open each bookmark in Desktop and verify slicers.",
+      "bot_sources": {
+        "abc-circuit[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "date"
+      ],
+      "path_signals": [],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/37",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 37
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/37",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 37
+        }
+      ]
+    },
+    {
+      "pattern_id": "89b22848d72e",
+      "support_count": 2,
+      "representative_title": "Branch parameter dataset hardcodes corporate_id = 'corp_Lift', silently excluding branches of every other corporate from the Branch Name filter.",
+      "why_it_happens": "Dataset or parameter hardcodes one tenant corp id.",
+      "preventive_action": "Parameterize corporate_id / use RLS pattern; test with multi-branch client data.",
+      "bot_sources": {
+        "abc-circuit[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [],
+      "path_signals": [],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/46",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 46
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-lift/pull/46",
+          "repo": "glofoxinc/abc-customize-insights-lift",
+          "number": 46
+        }
+      ]
+    },
+    {
+      "pattern_id": "db5ba8c0d1f6",
+      "support_count": 2,
+      "representative_title": "Report references missing model tables",
+      "why_it_happens": "The new Standard Dashboard is wired to **XPO Custom Semantic model v1**, but many page visuals still query **`dim_branch`**, **`dim_user`**, and **`flt_visits`**, which are not tables in that model (branch data lives in **`dim_branch_all`**, visits in aggregate tables).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "report.json"
+      ],
+      "path_signals": [
+        "e7411fb4-1070-924c-4587-f87ef5587856.report/definition.pbir",
+        "e7411fb4-1070-924c-4587-f87ef5587856.report/definition/pages/reportsectionf13657dba26a83b72967/visuals/40423f6f3b466c4a5457/visual.json",
+        "e7411fb4-1070-924c-4587-f87ef5587856.report/definition/pages/reportsectionf13657dba26a83b72967/visuals/d809b8834c7402c2264b/visual.json"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xpo/pull/15",
+          "repo": "glofoxinc/abc-customize-insights-xpo",
+          "number": 15
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xpo/pull/16",
+          "repo": "glofoxinc/abc-customize-insights-xpo",
+          "number": 16
+        }
+      ]
+    },
+    {
+      "pattern_id": "855223c59a38",
+      "support_count": 2,
+      "representative_title": "XPO Custom Semantic model v1",
+      "why_it_happens": "The new Standard Dashboard is wired to **XPO Custom Semantic model v1**, but many page visuals still query **`dim_branch`**, **`dim_user`**, and **`flt_visits`**, which are not tables in that model (branch data lives in **`dim_branch_all`**, visits in aggregate tables).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "report.json"
+      ],
+      "path_signals": [
+        "e7411fb4-1070-924c-4587-f87ef5587856.report/definition.pbir",
+        "e7411fb4-1070-924c-4587-f87ef5587856.report/definition/pages/reportsectionf13657dba26a83b72967/visuals/d809b8834c7402c2264b/visual.json",
+        "e7411fb4-1070-924c-4587-f87ef5587856.report/definition/pages/reportsectionf13657dba26a83b72967/visuals/40423f6f3b466c4a5457/visual.json",
+        "e7411fb4-1070-924c-4587-f87ef5587856.report/definition/pages/010127eca37cb7b904fc/visuals/0df053e294ecba0d8509/visual.json",
+        "e7411fb4-1070-924c-4587-f87ef5587856.report/definition/pages/f3f4ac326533b93908e2/visuals/5619b35a2cd93d5e5b73/visual.json"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xpo/pull/15",
+          "repo": "glofoxinc/abc-customize-insights-xpo",
+          "number": 15
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xpo/pull/15",
+          "repo": "glofoxinc/abc-customize-insights-xpo",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "pattern_id": "a8299356db9a",
+      "support_count": 2,
+      "representative_title": "Hardcoded branch filter accidentally committed in slicer",
+      "why_it_happens": "The branch slicer (`437fb5d2e47a6021c77c`) now contains a hardcoded filter restricting data to only `'Xtreme Fitness Stasz\u00f3w'`.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "report.json"
+      ],
+      "path_signals": [
+        "daily report.report/report.json"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xtremefitness/pull/43",
+          "repo": "glofoxinc/abc-customize-insights-xtremefitness",
+          "number": 43
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xtremefitness/pull/44",
+          "repo": "glofoxinc/abc-customize-insights-xtremefitness",
+          "number": 44
+        }
+      ]
+    },
+    {
+      "pattern_id": "c8eb6deb03fc",
+      "support_count": 2,
+      "representative_title": "RLS ranks ignore group scope",
+      "why_it_happens": "Diff includes paths reviewers treat as scope creep.",
+      "preventive_action": "Run scope preflight; remove scripts/docs/extra .rdl unless ticket names them.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".tmdl",
+        "rls"
+      ],
+      "path_signals": [
+        "semantic model 2.0.semanticmodel/definition/tables/sales league measures.tmdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xtremefitness/pull/55",
+          "repo": "glofoxinc/abc-customize-insights-xtremefitness",
+          "number": 55
+        },
+        {
+          "url": "https://github.com/glofoxinc/abc-customize-insights-xtremefitness/pull/56",
+          "repo": "glofoxinc/abc-customize-insights-xtremefitness",
+          "number": 56
+        }
+      ]
+    },
+    {
+      "pattern_id": "34b25a430e84",
+      "support_count": 2,
+      "representative_title": "SOB and Attrition Analysis tables have identical queries",
+      "why_it_happens": "The `agg_sob_attrition_metrics` and `agg_attrition_analysis_attrition_metrics` tables are created with byte-for-byte identical queries (same source tables, same joins, same WHERE filters, same date ranges), only differing in the destination table name.",
+      "preventive_action": "Parameterize corporate_id / use RLS pattern; test with multi-branch client data.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        "date"
+      ],
+      "path_signals": [
+        "[pipeline] 31- lost members aggregated tables.notebook/notebook-content.sql",
+        "[pipeline] 8 - attrition analysis aggregations.notebook/notebook-content.sql",
+        "[pipeline] 12 - state of the business aggregations.notebook/notebook-content.sql"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/180",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 180
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/180",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 180
+        }
+      ]
+    },
+    {
+      "pattern_id": "0d3724e7fbdf",
+      "support_count": 2,
+      "representative_title": "Imported filter only on joins",
+      "why_it_happens": "`joins_m` excludes imported memberships via `has_commenced_before_imported_user = false`, but `attrition_m` does not apply the same filter on `fct_user_membership`.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [],
+      "path_signals": [
+        "[pipeline] 7 - xtreme sales league aggregations.notebook/notebook-content.sql"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/212",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 212
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/214",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 214
+        }
+      ]
+    },
+    {
+      "pattern_id": "f1d796fc6ab0",
+      "support_count": 2,
+      "representative_title": "[Diagnostic-only; NOT a defect] Registration probe for line-1 examination evidence of dim_payment_account.sql.",
+      "why_it_happens": "Bot flagged a structural or semantic issue in BI artifacts (see title).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "abc-circuit[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [],
+      "path_signals": [],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/264",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 264
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/264",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 264
+        }
+      ]
+    },
+    {
+      "pattern_id": "8d341d91b553",
+      "support_count": 2,
+      "representative_title": "[Diagnostic-only; NOT a defect] Registration probe for line-1 examination evidence of dim_payment_methods.sql.",
+      "why_it_happens": "Bot flagged a structural or semantic issue in BI artifacts (see title).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "abc-circuit[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [],
+      "path_signals": [],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/264",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 264
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-fabric-fitnessbi/pull/264",
+          "repo": "glofoxinc/gf-fabric-fitnessbi",
+          "number": 264
+        }
+      ]
+    },
+    {
+      "pattern_id": "07e0cf582c70",
+      "support_count": 2,
+      "representative_title": "Documentation textbox width exceeds container rectangle width",
+      "why_it_happens": "KPI/filter change without documentation page alignment.",
+      "preventive_action": "Update Measures & Definitions / paginated doc page to match AC before PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl",
+        "documentation"
+      ],
+      "path_signals": [
+        "all customers.paginatedreport/all customers.rdl",
+        "class utilization - event details.paginatedreport/class utilization - event details.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/423",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 423
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/423",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 423
+        }
+      ]
+    },
+    {
+      "pattern_id": "002477498a41",
+      "support_count": 2,
+      "representative_title": "GROUP BY splits coalesced rows",
+      "why_it_happens": "`membership_name` and `plan_name` are selected via `COALESCE` on booking vs current columns, but `GROUP BY` lists those four source columns separately.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl"
+      ],
+      "path_signals": [
+        "class utilization - unique attendee details.paginatedreport/class utilization - unique attendee details.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/450",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 450
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/451",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 451
+        }
+      ]
+    },
+    {
+      "pattern_id": "32a8b87ef904",
+      "support_count": 2,
+      "representative_title": "JoinType default values removed",
+      "why_it_happens": "The `JoinType` (Member Type) parameter no longer has a default, but the main query still filters with `membership_state IN (@JoinType)`.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl"
+      ],
+      "path_signals": [
+        "new members - details.paginatedreport/new members - details.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/452",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 452
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/453",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 453
+        }
+      ]
+    },
+    {
+      "pattern_id": "37baaa2ee112",
+      "support_count": 2,
+      "representative_title": "Source filter lacks default",
+      "why_it_happens": "The new `Source` parameter is required for filtering via `user_source IN (@Source)` but has no default (for example, all sources from `prm_Source`).",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl"
+      ],
+      "path_signals": [
+        "new members - details.paginatedreport/new members - details.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/452",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 452
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/453",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 453
+        }
+      ]
+    },
+    {
+      "pattern_id": "889119216f7c",
+      "support_count": 2,
+      "representative_title": "Body height causes blank pages",
+      "why_it_happens": "KPI/filter change without documentation page alignment.",
+      "preventive_action": "Update Measures & Definitions / paginated doc page to match AC before PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl",
+        "documentation"
+      ],
+      "path_signals": [
+        "class utilization - class details.paginatedreport/class utilization - class details.rdl",
+        "class utilization - event details.paginatedreport/class utilization - event details.rdl",
+        "class utilization - first time attendee details.paginatedreport/class utilization - first time attendee details.rdl",
+        "attrition analysis - expiring member details.paginatedreport/attrition analysis - expiring member details.rdl",
+        "attrition analysis - lost members details.paginatedreport/attrition analysis - lost members details.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/454",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 454
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/482",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 482
+        }
+      ]
+    },
+    {
+      "pattern_id": "8ab0e5b573d5",
+      "support_count": 2,
+      "representative_title": "YTD includes future classes",
+      "why_it_happens": "The `ytd_classes` window upper bound is the start of next year, so scheduled classes after today in the current year are included whenever they also pass the event date filters.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl",
+        "date"
+      ],
+      "path_signals": [
+        "trainer class report.paginatedreport/trainer class report.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/487",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 487
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/489",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 489
+        }
+      ]
+    },
+    {
+      "pattern_id": "8c697415ff94",
+      "support_count": 2,
+      "representative_title": "Invalid-date error banner removed",
+      "why_it_happens": "The `ErrorBanner` textbox that explained an invalid From/To date range was removed, while the tablix still hides when `EndDate` is before `StartDate`.",
+      "preventive_action": "Read inline comment on similar PRs in corpus; apply same class of fix on your branch before opening PR.",
+      "bot_sources": {
+        "cursor[bot]": 2
+      },
+      "artifact_tags": {},
+      "match_hints": [
+        ".rdl",
+        "date"
+      ],
+      "path_signals": [
+        "payouts - item details.paginatedreport/payouts - item details.rdl"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/491",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 491
+        },
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/492",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 492
+        }
+      ]
+    },
+    {
+      "pattern_id": "circuit_none_consequence_an5608_sales",
+      "support_count": 1,
+      "representative_title": "None: main-query parameter filters are consistent with the parameter-list datasets' normalization",
+      "why_it_happens": "Circuit flags COALESCE/Not specified parity between prm_PaymentMethod/prm_ChargeType and MainQuery WHERE on Revenue Sales paginated reports — often with Consequence: None.",
+      "preventive_action": "If param dataset and MainQuery use the same normalization, pre-draft PR reply: no code change; resolve thread after QA filter smoke. Do not rewrite SQL for a None finding.",
+      "bot_sources": {
+        "abc-circuit[bot]": 1
+      },
+      "artifact_tags": {
+        "paginated": true
+      },
+      "match_hints": [
+        "payment_method",
+        "charge_type",
+        "prm_paymentmethod",
+        "not specified"
+      ],
+      "path_signals": [
+        "revenue analysis - sales by items.paginatedreport",
+        "revenue analysis - sales by transactions.paginatedreport"
+      ],
+      "example_prs": [
+        {
+          "url": "https://github.com/glofoxinc/gf-insights-fitnessbi/pull/564",
+          "repo": "glofoxinc/gf-insights-fitnessbi",
+          "number": 564
+        }
+      ]
+    }
+  ],
+  "regenerate": "python learn_from_bot_corpus.py"
+}
