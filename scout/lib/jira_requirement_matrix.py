@@ -53,16 +53,16 @@ def _classify(text: str) -> RequirementCategory:
     low = text.lower()
     if _OUT_OF_SCOPE.search(low):
         return "scope"
-    if "country" in low or "filter" in low or "parameter" in low or "branch" in low:
-        return "filter"
-    if "first column" in low or "column" in low or "grid" in low:
-        return "column"
-    if "document" in low or "doc page" in low:
+    if "document" in low or "doc page" in low or "definitions" in low:
         return "documentation"
     if "dashboard" in low and "paginated" in low:
         return "parity"
     if "pbix" in low or ".tmdl" in low or "semantic model" in low:
         return "parity"
+    if "first column" in low or ("column" in low and "grid" in low):
+        return "column"
+    if "filter" in low or "parameter" in low or "slicer" in low:
+        return "filter"
     return "generic"
 
 
@@ -164,45 +164,6 @@ def extract_bullets(summary: str, description: str, comments_text: str) -> list[
     return items
 
 
-def infer_artifact_glob_from_summary(summary: str, description: str = "") -> str | None:
-    """Derive deliverable .rdl glob from Jira title (e.g. New Members - Details (paginated))."""
-    text = f"{summary}\n{description or ''}"
-    match = re.search(r"[-–]\s*(.+?)\s*\(paginated\)", text, re.I)
-    if match:
-        name = match.group(1).strip()
-        if name and len(name) < 120:
-            return f"**/{name}.rdl"
-    match2 = re.search(
-        r"(?:paginated\s+report\s+)?['\"]?([^'\"\n]+?)['\"]?\s*(?:paginated\s+report)?",
-        text,
-        re.I,
-    )
-    if match2 and ".rdl" in text.lower():
-        name = match2.group(1).strip()
-        if name.endswith(".rdl"):
-            return f"**/{name}"
-        if 3 < len(name) < 80:
-            return f"**/{name}.rdl"
-    return None
-
-
-def infer_artifact_globs(summary: str, description: str = "") -> list[str]:
-    """All deliverable globs mentioned in Jira (multi-report tickets)."""
-    text = f"{summary}\n{description or ''}"
-    globs: list[str] = []
-    for match in re.finditer(r"[-–]\s*(.+?)\s*\(paginated\)", text, re.I):
-        name = match.group(1).strip()
-        if name and len(name) < 120:
-            g = f"**/{name}.rdl"
-            if g not in globs:
-                globs.append(g)
-    if not globs:
-        single = infer_artifact_glob_from_summary(summary, description)
-        if single:
-            globs.append(single)
-    return globs
-
-
 def build_requirement_matrix(
     *,
     ticket_key: str,
@@ -251,11 +212,14 @@ def matrix_to_ticket_profile(
     matrix: list[MatrixRequirement],
     *,
     description: str = "",
-    artifact_glob: str = "**/*.rdl",
+    comments_text: str = "",
+    artifact_glob: str = "",
 ) -> dict[str, Any]:
-    globs = infer_artifact_globs(summary, description)
-    if artifact_glob in ("", "**/*.rdl") and globs:
-        artifact_glob = globs[0]
+    from lib.deliverables import infer_deliverable_globs, primary_artifact_glob
+
+    globs = infer_deliverable_globs(summary, description, comments_text)
+    if not artifact_glob and globs:
+        artifact_glob = primary_artifact_glob(globs)
     requirements: list[dict[str, Any]] = []
     out_scope: list[str] = []
     for row in matrix:
@@ -292,7 +256,7 @@ def matrix_to_ticket_profile(
         "artifact_glob": artifact_glob,
         "scope": {
             "deliverable": summary,
-            "in_scope": globs if globs else [artifact_glob],
+            "in_scope": globs if globs else ([artifact_glob] if artifact_glob else []),
             "in_scope_requirements": [r.text for r in matrix if r.in_scope],
             "out_of_scope": out_scope,
         },
@@ -329,21 +293,3 @@ def format_matrix_markdown(ticket_key: str, summary: str, matrix: list[MatrixReq
     return "\n".join(lines)
 
 
-def load_jira_from_paginate(ticket_key: str) -> dict[str, Any]:
-    """Optional live Jira via Paginate product (same credentials as Paginate MCP)."""
-    import os
-    import sys
-    from pathlib import Path
-
-    root = Path(__file__).resolve().parents[3] / "paginate-platform" / "workspace" / "product"
-    if not root.is_dir():
-        root = Path(os.environ.get("PAGINATE_PRODUCT_ROOT", ""))
-    if not root.is_dir():
-        return {"ok": False, "error": "paginate product root not found"}
-    platform_root = str(root.parent.parent)
-    for entry in (platform_root, str(root)):
-        if entry not in sys.path:
-            sys.path.insert(0, entry)
-    from paginate.jira_intake import fetch_jira_ticket
-
-    return fetch_jira_ticket(ticket_key)

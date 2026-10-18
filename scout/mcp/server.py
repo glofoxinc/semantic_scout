@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MCP server — Semantic Scout (stdio, mcp SDK 2.x). Independent Jira + git + bot preflight."""
+"""MCP server — Semantic Scout (stdio). Universal Jira + git + bot preflight only."""
 from __future__ import annotations
 
 import json
@@ -14,60 +14,26 @@ if str(ROOT) not in sys.path:
 from mcp.server.mcpserver import MCPServer
 
 from lib.bot_preflight import format_preflight_block, run_bot_preflight
+from lib.deliverables import infer_deliverable_globs
 from lib.git_scope import format_scope_report, git_changed_files, git_diff_excerpt, scope_violations
 from lib.jira_repo_router import resolve_route
+from lib.review_output import build_review_summary
 from lib.scout_intake import intake_from_text
 from lib.signoff_gate import run_signoff_checks
-from lib.review_output import build_review_summary
 from lib.ticket_gap_report import format_ticket_list, run_bundle_report
 
-SCOUT_VERSION = "4.3.0"
+SCOUT_VERSION = "5.0.0"
 
 mcp = MCPServer("semantic-scout")
 
-_PROFILES = ROOT / "data" / "ticket_profiles"
 
-
-def _default_bundle_dict(profile: dict) -> dict:
-    key = profile.get("key") or profile.get("ticket_key") or "TICKET"
-    return {
-        "schema_version": 2,
-        "bundle_id": key,
-        "tickets": [profile],
-        "default_out_of_scope": [
-            "Power BI dashboard unless listed in matrix",
-            "Semantic model unless listed in matrix",
-            "scripts/ unless ticket names automation",
-            "docs/ unless ticket names documentation deliverable",
-        ],
-    }
-
-
-def _bundle_path_for_ticket(ticket_key: str) -> Path | None:
-    key = ticket_key.strip().upper()
-    if not _PROFILES.is_dir():
-        return None
-    for path in sorted(_PROFILES.glob("*.json")):
-        if key in path.stem or key in path.read_text(encoding="utf-8"):
-            return path
-    return None
-
-
-def _resolve_bundle(
+def _bundle_from_jira(
     ticket_key: str,
     summary: str,
     description: str,
     comments_text: str,
     artifact_glob: str,
-    bundle_path: str | None,
-) -> Path | None:
-    if bundle_path:
-        return Path(bundle_path)
-    found = _bundle_path_for_ticket(ticket_key)
-    if found:
-        return found
-    if not (summary or description):
-        return None
+) -> tuple[dict, Path]:
     intake = intake_from_text(
         ticket_key.strip().upper(),
         summary,
@@ -75,16 +41,26 @@ def _resolve_bundle(
         comments_text,
         artifact_glob=artifact_glob,
     )
+    bundle = {
+        "schema_version": 2,
+        "bundle_id": ticket_key.strip().upper(),
+        "tickets": [intake["profile"]],
+        "default_out_of_scope": [
+            "scripts/ unless Jira names them",
+            "docs/ unless Jira names them",
+            ".github/ unless Jira names them",
+        ],
+    }
     tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8")
-    json.dump(_default_bundle_dict(intake["profile"]), tmp, indent=2)
+    json.dump(bundle, tmp, indent=2)
     tmp.close()
-    return Path(tmp.name)
+    return intake, Path(tmp.name)
 
 
 @mcp.tool()
 def scout_engine_health() -> str:
-    """Run Scout sign-off checks (matrix + scoped evaluation logic)."""
-    return json.dumps(run_signoff_checks(), indent=2)
+    """Engine sign-off (universal matrix + deliverable inference)."""
+    return json.dumps({**run_signoff_checks(), "scout_version": SCOUT_VERSION}, indent=2)
 
 
 @mcp.tool()
@@ -93,7 +69,6 @@ def scout_route_repository(
     summary: str = "",
     description: str = "",
 ) -> str:
-    """Suggest glofoxinc GitHub repo and integration branch from Jira key + text."""
     route = resolve_route(ticket_key, summary, description)
     return json.dumps(route.as_dict(), indent=2)
 
@@ -104,9 +79,9 @@ def scout_requirement_matrix(
     summary: str,
     description: str,
     comments_text: str = "",
-    artifact_glob: str = "**/*.rdl",
+    artifact_glob: str = "",
 ) -> str:
-    """Jira text → numbered requirement matrix + ticket profile JSON."""
+    """Jira text → matrix + profile (no static ticket bundles)."""
     result = intake_from_text(
         ticket_key.strip().upper(),
         summary,
@@ -118,11 +93,7 @@ def scout_requirement_matrix(
 
 
 @mcp.tool()
-def scout_branch_diff(
-    repo_root: str,
-    base_ref: str = "origin/main",
-) -> str:
-    """List changed files and diff excerpt vs base (for scope + bot preflight)."""
+def scout_branch_diff(repo_root: str, base_ref: str = "origin/main") -> str:
     root = Path(repo_root).resolve()
     if not root.is_dir():
         return json.dumps({"ok": False, "error": f"repo_root not found: {root}"})
@@ -133,7 +104,6 @@ def scout_branch_diff(
             "ok": True,
             "base_ref": base_ref,
             "changed_paths": paths,
-            "diff_excerpt_chars": len(excerpt),
             "diff_excerpt": excerpt[:50_000],
         },
         indent=2,
@@ -141,14 +111,7 @@ def scout_branch_diff(
 
 
 @mcp.tool()
-def scout_bot_ahead(
-    changed_paths_json: str,
-    diff_excerpt: str = "",
-) -> str:
-    """
-    Predict Circuit / review bot comments from learned corpus + this branch diff.
-    Pass changed_paths as JSON array of strings (from scout_branch_diff).
-    """
+def scout_bot_ahead(changed_paths_json: str, diff_excerpt: str = "") -> str:
     try:
         paths = json.loads(changed_paths_json)
         if not isinstance(paths, list):
@@ -161,7 +124,6 @@ def scout_bot_ahead(
             "ok": True,
             "predictions": result.get("predictions"),
             "markdown": format_preflight_block(result),
-            "corpus_prs_analyzed": result.get("corpus_prs_analyzed"),
         },
         indent=2,
     )
@@ -175,33 +137,22 @@ def scout_ticket_review(
     description: str,
     comments_text: str = "",
     base_ref: str = "origin/main",
-    artifact_glob: str = "**/*.rdl",
-    bundle_path: str | None = None,
+    artifact_glob: str = "",
     head_sha: str = "",
     circuit_reviewed_sha: str = "",
     scope_mode: str = "ticket",
 ) -> str:
     """
-    Full Semantic Scout run: matrix-backed profile, git scope, per-requirement evidence,
-    delivery ratings, bot-ahead. No Paginate Forge required.
+    Full review from Jira text + git diff only. No Paginate, no static ticket JSON.
+    Pass artifact_glob when Jira does not name the file (e.g. **/My Report.rdl).
     """
     root = Path(repo_root).resolve()
     if not root.is_dir():
         return json.dumps({"ok": False, "error": f"repo_root not found: {root}"})
 
-    intake = intake_from_text(
-        ticket_key.strip().upper(),
-        summary,
-        description,
-        comments_text,
-        artifact_glob=artifact_glob,
+    intake, bundle_file = _bundle_from_jira(
+        ticket_key, summary, description, comments_text, artifact_glob
     )
-    bundle_file = _resolve_bundle(
-        ticket_key, summary, description, comments_text, artifact_glob, bundle_path
-    )
-    if not bundle_file or not bundle_file.is_file():
-        return json.dumps({"ok": False, "error": "Could not build ticket bundle"})
-
     changed_paths = git_changed_files(root, base_ref)
     diff_excerpt = git_diff_excerpt(root, base_ref)
     branch_ctx = {
@@ -220,7 +171,6 @@ def scout_ticket_review(
     reports = run_bundle_report(
         bundle_file,
         root,
-        paginate_by_ticket=None,
         process_ctx=process_ctx,
         branch_ctx=branch_ctx,
     )
@@ -228,20 +178,19 @@ def scout_ticket_review(
     profile = intake["profile"]
     scope = profile.get("scope") or {}
     in_scope = list(dict.fromkeys(scope.get("in_scope") or []))
+    if not in_scope and artifact_glob:
+        in_scope = [artifact_glob]
     violations = scope_violations(
         changed_paths,
         in_scope=in_scope,
         out_of_scope=list(scope.get("out_of_scope") or []),
         scope_mode=scope_mode,
     )
-
     bot = run_bot_preflight(changed_paths, diff_excerpt)
     circuit_stale = bool(
-        head_sha
-        and circuit_reviewed_sha
-        and head_sha != circuit_reviewed_sha
+        head_sha and circuit_reviewed_sha and head_sha != circuit_reviewed_sha
     )
-    summary = build_review_summary(
+    summary_obj = build_review_summary(
         ticket_key=ticket_key.strip().upper(),
         matrix_markdown=intake["matrix_markdown"],
         scope_violations=violations,
@@ -251,20 +200,22 @@ def scout_ticket_review(
         circuit_stale=circuit_stale,
     )
 
-    payload = {
-        "ok": True,
-        "scout_version": SCOUT_VERSION,
-        "ticket_key": ticket_key.strip().upper(),
-        "review": summary,
-        "matrix_markdown": intake["matrix_markdown"],
-        "scope_report": format_scope_report(violations),
-        "bot_ahead_markdown": format_preflight_block(bot),
-        "bot_resolution_markdown": summary["bot_resolution_markdown"],
-        "changed_paths": changed_paths,
-        "gap_markdown": format_ticket_list(reports),
-        "reports": [r.as_dict() for r in reports],
-    }
-    return json.dumps(payload, indent=2)
+    return json.dumps(
+        {
+            "ok": True,
+            "scout_version": SCOUT_VERSION,
+            "deliverable_globs": infer_deliverable_globs(
+                summary, description, comments_text
+            ),
+            "review": summary_obj,
+            "matrix_markdown": intake["matrix_markdown"],
+            "scope_report": format_scope_report(violations),
+            "bot_ahead_markdown": format_preflight_block(bot),
+            "gap_markdown": format_ticket_list(reports),
+            "reports": [r.as_dict() for r in reports],
+        },
+        indent=2,
+    )
 
 
 @mcp.tool()
@@ -275,10 +226,16 @@ def scout_gap_report(
     description: str = "",
     comments_text: str = "",
     bundle_path: str | None = None,
-    artifact_glob: str = "**/*.rdl",
+    artifact_glob: str = "",
     base_ref: str = "origin/main",
 ) -> str:
-    """Delivery gap report (use scout_ticket_review for matrix + bot + scope in one call)."""
+    if bundle_path:
+        return json.dumps(
+            {
+                "ok": False,
+                "error": "bundle_path is deprecated; pass Jira text to scout_ticket_review",
+            }
+        )
     return scout_ticket_review(
         repo_root=repo_root,
         ticket_key=ticket_key,
@@ -287,7 +244,6 @@ def scout_gap_report(
         comments_text=comments_text,
         base_ref=base_ref,
         artifact_glob=artifact_glob,
-        bundle_path=bundle_path,
     )
 
 

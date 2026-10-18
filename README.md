@@ -17,7 +17,7 @@
 | `scout/lib/` | Engine only — do not edit for daily work |
 | `DOCUMENTATION.html` | Reference / onboarding deck |
 
-Same pattern as [Semantic Forge](https://github.com/glofoxinc/semantic_forge): thin skill + MCP for heavy work.
+**v5 — universal:** every review is built from **Jira text + git** only (no static ticket bundles, no Paginate). Same thin-skill + MCP pattern as [Semantic Forge](https://github.com/glofoxinc/semantic_forge).
 
 ## Setup (once, ~5 minutes)
 

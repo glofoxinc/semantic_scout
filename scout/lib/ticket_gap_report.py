@@ -104,7 +104,7 @@ def _find_artifacts(repo_root: Path, profile: dict[str, Any]) -> list[Path]:
     if single and single not in patterns:
         patterns.append(single)
     if not patterns:
-        patterns = ["**/*.rdl"]
+        return []
     found: list[Path] = []
     for pattern in patterns:
         hits = sorted(repo_root.glob(pattern))
@@ -1075,22 +1075,6 @@ def evaluate_ticket_profile(
     if merged_ctx:
         gaps.extend(merge_process_context(merged_ctx))
 
-    # Optional external standards audit — off by default (Scout is independent).
-    if (
-        paginate_by_ticket
-        and key in paginate_by_ticket
-        and (process_ctx or {}).get("include_standards_audit")
-    ):
-        scope = profile.get("scope") or {}
-        ignore_ids = set(scope.get("ignore_standards_ids") or [])
-        gaps.extend(
-            merge_paginate_json(
-                paginate_by_ticket[key],
-                key,
-                ignore_standards_ids=ignore_ids,
-            )
-        )
-
     gaps = _dedupe_gaps(gaps)
 
     jira_rating = _score_requirements(requirements_out)
@@ -1220,7 +1204,7 @@ def format_ticket_list(reports: list[TicketReport]) -> str:
             lines.append("Delivery gaps: NONE")
         lines.append("")
         if standards:
-            lines.append("Standards gaps (Paginate catalogue — not counted in branch rating):")
+            lines.append("Standards gaps (optional external audit — not used in v5):")
             for g in standards:
                 lines.append(f"  - ({g.kind}) {g.issue}")
                 if g.detail:
@@ -1235,59 +1219,31 @@ def format_ticket_list(reports: list[TicketReport]) -> str:
 def main() -> None:
     import argparse
 
-    parser = argparse.ArgumentParser(description="Semantic Scout per-ticket gap report")
-    parser.add_argument(
-        "--bundle",
-        type=Path,
-        default=Path(__file__).resolve().parents[1]
-        / "data"
-        / "ticket_profiles"
-        / "AN-5603-5605-5606.json",
-    )
+    parser = argparse.ArgumentParser(description="Semantic Scout gap report from a bundle JSON")
+    parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--repo-root", type=Path, required=True)
-    parser.add_argument(
-        "--paginate-json",
-        type=Path,
-        help="JSON file: { \"AN-5605\": { ... analyze_rdl output ... }, ... }",
-    )
+    parser.add_argument("--base-ref", default="origin/main")
     parser.add_argument("--circuit-reviewed-sha", default="")
     parser.add_argument("--head-sha", default="")
-    parser.add_argument("--pbrs-signed-off", action="store_true")
-    parser.add_argument("--live-paginate", action="store_true")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 
-    paginate_map: dict[str, dict[str, Any]] | None = None
-    if args.paginate_json and args.paginate_json.is_file():
-        paginate_map = json.loads(args.paginate_json.read_text(encoding="utf-8"))
-
-    if args.live_paginate:
-        from lib.paginate_audit_bridge import run_paginate_full_audit
-
-        bundle = load_bundle(args.bundle)
-        paginate_map = paginate_map or {}
-        for profile in bundle.get("tickets") or []:
-            key = profile["key"]
-            artifacts = _find_artifacts(args.repo_root, profile)
-            audits = [run_paginate_full_audit(artifact, key) for artifact in artifacts]
-            if audits:
-                paginate_map[key] = audits[0]
-                paginate_map[key]["reports_audited"] = [artifact.name for artifact in artifacts]
-                if len(audits) > 1:
-                    paginate_map[key]["ok"] = all(bool(item.get("ok")) for item in audits)
+    from lib.git_scope import git_changed_files, git_diff_excerpt
 
     process_ctx = {
         "circuit_reviewed_sha": args.circuit_reviewed_sha or None,
         "head_sha": args.head_sha or None,
-        "pbrs_signed_off": args.pbrs_signed_off,
-        "bot_findings_resolved": [],
     }
-
     reports = run_bundle_report(
         args.bundle,
         args.repo_root,
-        paginate_by_ticket=paginate_map,
         process_ctx=process_ctx,
+        branch_ctx={
+            "base_ref": args.base_ref,
+            "changed_paths": git_changed_files(args.repo_root, args.base_ref),
+            "diff_excerpt": git_diff_excerpt(args.repo_root, args.base_ref),
+            "scope_mode": "ticket",
+        },
     )
     if args.json:
         print(json.dumps([r.as_dict() for r in reports], indent=2))

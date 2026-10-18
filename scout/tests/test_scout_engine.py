@@ -29,6 +29,13 @@ def test_scope_warns_other_reports_on_ticket_mode():
     assert not any(v["severity"] == "blocker" for v in violations)
 
 
+def test_deliverable_inference():
+    from lib.deliverables import infer_deliverable_globs
+
+    globs = infer_deliverable_globs("Title - Foo Bar (paginated)", "")
+    assert any("Foo Bar.rdl" in g for g in globs)
+
+
 def test_signoff_checks_pass():
     result = run_signoff_checks()
     assert result["ok"] is True

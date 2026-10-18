@@ -1,42 +1,37 @@
 ---
 name: semantic-scout
-description: "Semantic Scout v4.3: Jira vs branch, git scope, bot resolution checklist, per-requirement evidence. Setup Semantic Scout; Semantic Scout for AN-XXXX."
+description: "Universal Semantic Scout v5: any Jira ticket vs git branch, bot-ahead, no static bundles or Paginate."
 metadata:
-  schema_version: "4.3-scout-mcp"
+  schema_version: "5.0-scout-mcp"
 ---
 
-# Semantic Scout v4.3
+# Semantic Scout v5 (universal)
 
-**Independent.** `scout_ticket_review` on the **product repo** is the primary call.
+**Input:** Jira summary + description + comments (Atlassian MCP) + product repo git diff.  
+**Not used:** static ticket JSON, Paginate Forge, prebuilt country bundles.
 
 ## Setup
 
-1. Clone **glofoxinc/semantic_scout** → **Setup Semantic Scout** (agent installs `docs/SKILL.md` + MCP).
-2. `scout_engine_health` must pass (5 engine checks including country column RDL).
+Clone **glofoxinc/semantic_scout** → **Setup Semantic Scout** → `scout_engine_health` passes.
 
-## Daily
+## Primary call
 
-```
-scout_ticket_review(
-  repo_root = <gf-insights-fitnessbi>,
-  ticket_key, summary, description, comments_text,
-  base_ref = origin/main | origin/Standard_dev,
-  head_sha, circuit_reviewed_sha,   // optional Circuit stale bot
-  scope_mode = ticket | strict      // ticket = warn on other reports on branch
-)
-```
+`scout_ticket_review` on **gf-insights-fitnessbi** (or any repo):
 
-Use JSON field **`review`** for ratings, requirements, **`bot_resolution_markdown`**, and **`human_gate`**.
+- `ticket_key`, `summary`, `description`, `comments_text`
+- `base_ref` = PR base branch
+- `artifact_glob` only if Jira does not name the file (else inferred from title/text)
+- `scope_mode` = `ticket` (default) | `strict`
 
-**You** must open each file and confirm `met` rows before **B**.
+Use response `review` + `deliverable_globs` + `bot_resolution_markdown`. Finish the **SCOUT RATING CARD** before PR **B**.
 
-## Scope modes
+## Deliverable inference (automatic)
 
-| Mode | Behavior |
-|------|----------|
-| `ticket` (default) | Other BI files on branch → **info** (split PR reminder), not delivery=0 |
-| `strict` | Any out-of-scope path → **blocker** |
+| Jira mentions | Inferred glob |
+|---------------|----------------|
+| `Report Name (paginated)` | `**/Report Name.rdl` |
+| `Name (dashboard)` | `**/*Name*.Report/**/report.json` |
+| semantic model / `.tmdl` | `**/*.SemanticModel/**/*.tmdl` |
+| explicit `Something.rdl` in text | `**/Something.rdl` |
 
-## No Paginate Forge
-
-Standards line stays **n/a**. Optional legacy audit only via internal flag (not in default MCP).
+Specialized RDL checks (e.g. country filter) run **only** when that AC text maps to a check id — not for every ticket.
