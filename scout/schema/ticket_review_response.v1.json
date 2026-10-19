@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "scout_ticket_review success response v1",
+  "type": "object",
+  "required": [
+    "ok",
+    "scout_version",
+    "response_schema_version",
+    "readiness",
+    "confidence",
+    "review_card_markdown",
+    "deliverable_globs",
+    "review",
+    "reports"
+  ],
+  "properties": {
+    "ok": { "const": true },
+    "scout_version": { "type": "string" },
+    "response_schema_version": { "const": "1.0" },
+    "readiness": { "enum": ["READY", "NOT READY"] },
+    "confidence": { "enum": ["high", "medium", "low"] },
+    "review_card_markdown": { "type": "string", "minLength": 1 },
+    "deliverable_globs": { "type": "array", "items": { "type": "string" } },
+    "review": {
+      "type": "object",
+      "required": [
+        "ticket_key",
+        "readiness",
+        "readiness_reasons",
+        "confidence",
+        "confidence_notes",
+        "review_card_markdown",
+        "ratings",
+        "requirements"
+      ],
+      "properties": {
+        "ticket_key": { "type": "string" },
+        "branch_name": { "type": "string" },
+        "base_ref": { "type": "string" },
+        "readiness": { "enum": ["READY", "NOT READY"] },
+        "readiness_reasons": { "type": "array", "items": { "type": "string" } },
+        "confidence": { "enum": ["high", "medium", "low"] },
+        "confidence_notes": { "type": "array", "items": { "type": "string" } },
+        "review_card_markdown": { "type": "string" },
+        "ratings": { "type": "object" },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "text", "status", "evidence"],
+            "properties": {
+              "id": { "type": "string" },
+              "text": { "type": "string" },
+              "status": { "enum": ["met", "partial", "missing", "unverified"] },
+              "evidence": { "type": "string" },
+              "must_have": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "reports": { "type": "array" }
+  }
+}

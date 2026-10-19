@@ -123,13 +123,10 @@ Readiness gate
 
 ---
 
-## 7. Recommended implementation priorities
+## 7. MCP response structure (v1)
 
-| Priority | Focus |
-|----------|--------|
-| **P0** | Core correctness: Jira ingestion, ticket-key validation, feature-branch Git diff analysis, acceptance-criteria traceability, missing-artifact detection, READY / NOT READY logic. |
-| **P1** | Developer experience: One-time setup, simple Cursor invocation, consistent review card, actionable findings, reruns after edits. |
-| **P2** | Advanced intelligence: Better artifact inference, semantic matching between criteria and file changes, likely reviewer/bot feedback, configurable branch hygiene rules. |
+Successful `scout_ticket_review` returns: `ok`, `scout_version`, `response_schema_version` (**1.0**), `readiness`, `confidence`, `review_card_markdown`, `deliverable_globs`, `review`, `reports`.  
+Schema file: `scout/schema/ticket_review_response.v1.json`.
 
 ---
 

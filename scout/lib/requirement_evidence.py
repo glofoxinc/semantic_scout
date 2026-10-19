@@ -4,6 +4,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from lib.artifact_evidence import build_non_rdl_checks
 from lib.rdl_checks import country_filter_in_sql
 from lib.ticket_gap_report import (
     RequirementResult,
@@ -24,18 +25,38 @@ def build_checks_bundle(
     checks: dict[str, bool] = {}
     all_gaps = []
     for path in artifacts:
-        file_checks, eng_gaps = analyze_rdl_engineering(
-            path,
-            req_ids=req_ids,
-            requirement_texts=requirement_texts,
-        )
-        all_gaps.extend(eng_gaps)
+        low = str(path).replace("\\", "/").lower()
+        if path.suffix.lower() == ".rdl" or ".paginatedreport/" in low:
+            file_checks, eng_gaps = analyze_rdl_engineering(
+                path,
+                req_ids=req_ids,
+                requirement_texts=requirement_texts,
+            )
+            all_gaps.extend(eng_gaps)
+        else:
+            file_checks = {}
+            eng_gaps = []
         if not checks:
             checks = dict(file_checks)
         else:
             for name, passed in file_checks.items():
                 checks[name] = bool(checks.get(name)) and passed
     return checks, all_gaps
+
+
+def merge_artifact_checks(
+    artifacts: list[Path],
+    checks: dict[str, bool],
+    *,
+    changed_paths: list[str],
+    diff_excerpt: str,
+) -> dict[str, bool]:
+    extra = build_non_rdl_checks(
+        artifacts, changed_paths=changed_paths, diff_excerpt=diff_excerpt
+    )
+    for k, v in extra.items():
+        checks[k] = bool(checks.get(k)) and v if k in checks else v
+    return checks
 
 
 def _diff_touches_artifact(changed_paths: list[str], artifact: Path) -> bool:
@@ -87,7 +108,29 @@ def evaluate_requirement(
     low = text.lower()
 
     if rid.startswith("manual_"):
-        return _evaluate_manual(text, artifacts, changed_paths, diff_excerpt)
+        return _evaluate_manual(text, artifacts, changed_paths, diff_excerpt, checks)
+
+    if any(a.name.lower() == "report.json" for a in artifacts):
+        if "documentation" in low and checks.get("documentation_touched_in_diff"):
+            return "met", f"report.json in diff with documentation-related changes"
+        if "documentation" in low and checks.get("documentation_page_in_report"):
+            return "partial", "Documentation page exists in report; confirm diff updates AC text"
+        if "slicer" in low or "location" in low:
+            if checks.get("location_slicer_inverted_mode_set"):
+                return "met", "report.json defines location slicer selection mode"
+            return "unverified", "Open report.json slicers and confirm location default"
+
+    if any(a.suffix.lower() == ".tmdl" for a in artifacts):
+        if checks.get("tmdl_in_diff") or checks.get("tmdl_touched_in_diff"):
+            if "measure" in low or "dax" in low:
+                return (
+                    "met" if checks.get("tmdl_has_measure") else "partial",
+                    "Semantic model file changed; measure definitions present"
+                    if checks.get("tmdl_has_measure")
+                    else "TMDL changed but no measure block detected — confirm AC",
+                )
+            return "met", f"TMDL in branch diff: {artifacts[0].name}"
+        return "missing", "Semantic model deliverable not in branch diff"
 
     automated = {
         "country_filter": (
@@ -148,7 +191,7 @@ def evaluate_requirement(
                 "Documentation check from ticket wording",
             )
 
-    return _evaluate_manual(text, artifacts, changed_paths, diff_excerpt)
+    return _evaluate_manual(text, artifacts, changed_paths, diff_excerpt, checks)
 
 
 def _evaluate_manual(
@@ -156,6 +199,7 @@ def _evaluate_manual(
     artifacts: list[Path],
     changed_paths: list[str],
     diff_excerpt: str,
+    checks: dict[str, bool] | None = None,
 ) -> tuple[RequirementStatus, str]:
     if not artifacts:
         return "missing", "Deliverable file not found on branch"
@@ -232,6 +276,12 @@ def evaluate_all_requirements(
     req_ids = {str(r["id"]) for r in requirements}
     checks = enrich_checks_for_requirements(
         artifacts, checks, req_ids, changed_paths=changed_paths
+    )
+    checks = merge_artifact_checks(
+        artifacts,
+        checks,
+        changed_paths=changed_paths,
+        diff_excerpt=diff_excerpt,
     )
     out: list[RequirementResult] = []
     for req in requirements:

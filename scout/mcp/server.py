@@ -29,7 +29,8 @@ from lib.scout_intake import intake_from_text
 from lib.signoff_gate import run_signoff_checks
 from lib.ticket_gap_report import format_ticket_list, run_bundle_report
 
-SCOUT_VERSION = "5.1.0"
+SCOUT_VERSION = "5.1.1"
+RESPONSE_SCHEMA_VERSION = "1.0"
 
 mcp = MCPServer("semantic-scout")
 
@@ -247,6 +248,7 @@ def scout_ticket_review(
         {
             "ok": True,
             "scout_version": SCOUT_VERSION,
+            "response_schema_version": RESPONSE_SCHEMA_VERSION,
             "readiness": summary_obj.get("readiness"),
             "confidence": summary_obj.get("confidence"),
             "review_card_markdown": summary_obj.get("review_card_markdown"),

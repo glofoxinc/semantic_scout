@@ -5,7 +5,9 @@
 | Resource | Link |
 |----------|------|
 | Team guide (browser) | https://glofoxinc.github.io/semantic_scout/DOCUMENTATION.html |
-| Requirements | [`REQUIREMENTS.md`](./REQUIREMENTS.md) · maintainer trace [`REQUIREMENTS-STATUS.md`](./REQUIREMENTS-STATUS.md) |
+| Requirements | [`REQUIREMENTS.md`](./REQUIREMENTS.md) — all Met · [`REQUIREMENTS-STATUS.md`](./REQUIREMENTS-STATUS.md) |
+| Release | [`RELEASE.md`](./RELEASE.md) · sign-off [`SIGNOFF-v5.1.1.md`](./SIGNOFF-v5.1.1.md) |
+| MCP schema | `scout/schema/ticket_review_response.v1.json` |
 | Product copy | [`PRODUCT-BRIEF.md`](./PRODUCT-BRIEF.md) |
 | Cursor skill (install source) | [`docs/SKILL.md`](./docs/SKILL.md) |
 | Hero image | [`share-image.svg`](./share-image.svg) |
