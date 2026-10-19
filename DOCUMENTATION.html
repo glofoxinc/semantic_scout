@@ -44,21 +44,21 @@ footer { text-align:center; color:var(--muted); font-size:13px; padding:8px 0 24
   <header>
     <p class="eyebrow">JIRA TO YOUR BRANCH — BEFORE THE PR</p>
     <h1>Semantic Scout</h1>
-    <p class="lead">Semantic Scout reads your Jira ticket and your git branch, then scores how much of the ticket is really done and what is still missing. You fix the gaps, then open the pull request. It does not prove KPI numbers in SQL — use KPI Forge and Fabric Validator for that.</p>
-    <div class="pills"><span class="pill">Cursor MCP</span><span class="pill">Any AN or PIC ticket</span><span class="pill">Does not run lakehouse SQL</span></div>
+    <p class="lead">Semantic Scout is the ticket delivery-truth layer: Jira acceptance criteria vs your branch, scores, missings, and review hints — before you open the pull request.</p>
+    <div class="pills"><span class="pill">Cursor MCP</span><span class="pill">Any AN or PIC ticket</span><span class="pill">Setup once · run per ticket</span></div>
   </header>
   <main>
     <section>
       <h2>Goal</h2>
-      <p>Give the team an on-demand check that ticket work is on the branch before anyone opens a pull request.</p>
+      <p>Give the team an on-demand way to check that Jira ticket work is complete on the feature branch before anyone opens a pull request.</p>
       <h3>Description</h3>
-      <p>Semantic Scout is the delivery-truth layer for BI tickets. It lines up Jira acceptance criteria with the files you changed — dashboards, paginated reports, semantic model — and flags scope and review risks early.</p>
+      <p>Semantic Scout is the ticket delivery-truth layer for Insights BI work. It reads the Jira summary, description, and comments, infers which artifacts belong to the ticket (dashboard, paginated report, semantic model), compares acceptance criteria to the git diff, scores Jira coverage and branch hygiene, lists missings, and surfaces likely review or bot feedback — so you fix gaps in Cursor instead of after a PR bounce.</p>
       <h3>Success looks like</h3>
-      <p>Any ticket can be checked when needed. Each criterion shows done or still missing. Reviewers see fewer bounce-backs. You know when it is reasonable to open the PR.</p>
+      <p>Any AN or PIC ticket can be reviewed on demand; every acceptance criterion gets a clear met or missing line tied to files; the review card shows scores and READY before the PR; setup is once via <span class="prompt">Setup Semantic Scout</span>; daily flow is <span class="prompt">Semantic Scout for AN-XXXX</span> with no per-ticket checklists or one-off scripts on the branch.</p>
       <h3>What we can achieve</h3>
-      <p>Same pre-PR habit for everyone instead of ad hoc checklists. Faster new-ticket intake. Less scope creep on branches.</p>
+      <p>Standardized pre-PR review instead of scattered “are we good?” threads; faster intake when a new ticket starts; repeatable scope discipline on ticket branches; earlier catch of missing companions, documentation, or parity items reviewers usually ask for.</p>
       <h3>What we can use it for</h3>
-      <p>Pre-PR on every change. After DAX, RDL, or filter edits. New ticket kickoff. Self-service check before you ask for review.</p>
+      <p>Pre-PR gate on every dashboard, paginated, or model change; regression check after DAX, RDL, filter, or documentation edits; new ticket kickoff to confirm scope and expected files; self-service review when reviewers are busy.</p>
     </section>
     <section>
       <h2>What you will see</h2>
@@ -129,11 +129,11 @@ Suggestion: Align dashboard and paginated date defaults</div>
         <tr><th>What you see</th><th>What to do</th></tr>
         <tr><td>Setup not found</td><td>Say <strong>Setup Semantic Scout</strong> again. Restart Cursor once.</td></tr>
         <tr><td>No Jira text</td><td>Sign in to Jira in Cursor, or paste the ticket description in chat.</td></tr>
-        <tr><td>Need KPI vs SQL proof</td><td>Use KPI Forge and Fabric Validator. Scout checks ticket delivery, not lakehouse numbers.</td></tr>
+        <tr><td>Wrong repo or branch</td><td>Open the product repo and checkout the branch that contains your ticket key; run Scout again.</td></tr>
       </table>
     </section>
   </main>
-  <footer>Semantic Scout · Cursor MCP · pair with KPI Forge when KPIs must match SQL</footer>
+  <footer>Semantic Scout · Cursor MCP · glofoxinc/semantic_scout</footer>
   <script>mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { primaryColor: "#C9A227", primaryTextColor: "#0A1628", primaryBorderColor: "#0A1628", lineColor: "#0A1628", fontFamily: "Segoe UI" } });</script>
 </body>
 </html>
