@@ -1,37 +1,12 @@
 ---
 name: semantic-scout
-description: "Universal Semantic Scout v5: any Jira ticket vs git branch, bot-ahead, no static bundles or Paginate."
-metadata:
-  schema_version: "5.0-scout-mcp"
+description: "Semantic Scout: before a PR, score Jira vs your branch and list missings. Say Setup Semantic Scout or Semantic Scout for AN-XXXX."
 ---
 
-# Semantic Scout v5 (universal)
+# Semantic Scout
 
-**Input:** Jira summary + description + comments (Atlassian MCP) + product repo git diff.  
-**Not used:** static ticket JSON, Paginate Forge, prebuilt country bundles.
+**One tool in Cursor** (same pattern as KPI Forge): say **Setup Semantic Scout** once, then **Semantic Scout for AN-XXXX** before every PR.
 
-## Setup
+Scout reads Jira and your branch, scores ticket vs files, lists missings. It does not run lakehouse SQL — use KPI Forge / Fabric Validator for KPI numbers.
 
-Clone **glofoxinc/semantic_scout** → **Setup Semantic Scout** → `scout_engine_health` passes.
-
-## Primary call
-
-`scout_ticket_review` on **gf-insights-fitnessbi** (or any repo):
-
-- `ticket_key`, `summary`, `description`, `comments_text`
-- `base_ref` = PR base branch
-- `artifact_glob` only if Jira does not name the file (else inferred from title/text)
-- `scope_mode` = `ticket` (default) | `strict`
-
-Use response `review` + `deliverable_globs` + `bot_resolution_markdown`. Finish the **SCOUT RATING CARD** before PR **B**.
-
-## Deliverable inference (automatic)
-
-| Jira mentions | Inferred glob |
-|---------------|----------------|
-| `Report Name (paginated)` | `**/Report Name.rdl` |
-| `Name (dashboard)` | `**/*Name*.Report/**/report.json` |
-| semantic model / `.tmdl` | `**/*.SemanticModel/**/*.tmdl` |
-| explicit `Something.rdl` in text | `**/Something.rdl` |
-
-Specialized RDL checks (e.g. country filter) run **only** when that AC text maps to a check id — not for every ticket.
+Team guide: https://glofoxinc.github.io/semantic_scout/DOCUMENTATION.html

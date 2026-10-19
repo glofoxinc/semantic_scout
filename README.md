@@ -17,13 +17,13 @@
 | `scout/lib/` | Engine only — do not edit for daily work |
 | `DOCUMENTATION.html` | Reference / onboarding deck |
 
-**v5 — universal:** every review is built from **Jira text + git** only (no static ticket bundles, no Paginate). Same thin-skill + MCP pattern as [Semantic Forge](https://github.com/glofoxinc/semantic_forge).
+Same team pattern as [KPI Forge](https://github.com/glofoxinc/kpi-forge): **Cursor MCP** — say **Setup Semantic Scout**, then **Semantic Scout for AN-XXXX** before each PR.
 
 ## Setup (once, ~5 minutes)
 
-In Cursor, with this repo open, say **Setup Semantic Scout**. The agent installs the skill and MCP; you only answer GitHub/Jira once if asked.
+In Cursor, say **Setup Semantic Scout**. Answer GitHub/Jira once if asked.
 
-Then: **Semantic Scout for AN-XXXX** (your real ticket).
+Then: **Semantic Scout for AN-XXXX** on your feature branch.
 
 ## Rollout plan (team / maintainers)
 
@@ -35,11 +35,4 @@ Then: **Semantic Scout for AN-XXXX** (your real ticket).
 6. **Internal dev** — `projects/stable/semantic-scout` is R&D/corpus only; **semantic_scout** on GitHub is the runtime source of truth.
 7. **Sign-off** — see [`SIGNOFF-v5.0.md`](./SIGNOFF-v5.0.md) after each major release.
 
-## MCP tools
-
-- **`scout_ticket_review`** — primary: Jira + git scope + per-requirement ratings + bot-ahead  
-- `scout_engine_health` — engine sign-off after install  
-- `scout_branch_diff` / `scout_bot_ahead` — split steps  
-- `scout_requirement_matrix` / `scout_route_repository` — helpers  
-
-See `scout/config/cursor-mcp.example.json` and root `mcp.json.example`.
+Maintainers: engine lives under `scout/`; see `mcp.json.example` for local wiring.
