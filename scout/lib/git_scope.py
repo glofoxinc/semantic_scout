@@ -18,6 +18,13 @@ def _run_git(repo: Path, *args: str) -> tuple[int, str, str]:
     return proc.returncode, proc.stdout or "", proc.stderr or ""
 
 
+def git_current_branch(repo_root: Path) -> str:
+    code, out, _ = _run_git(repo_root, "branch", "--show-current")
+    if code != 0:
+        return ""
+    return (out or "").strip()
+
+
 def git_changed_files(repo_root: Path, base_ref: str) -> list[str]:
     """Paths changed between base_ref and HEAD (POSIX-style relative paths)."""
     code, out, _ = _run_git(repo_root, "diff", "--name-only", f"{base_ref}...HEAD")

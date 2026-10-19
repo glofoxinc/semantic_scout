@@ -1,4 +1,4 @@
-# Requirements traceability (Semantic Scout v5)
+# Requirements traceability (Semantic Scout v5.1)
 
 Maintainer view: how current `main` maps to [REQUIREMENTS.md](./REQUIREMENTS.md). Update when the engine changes.
 

@@ -15,14 +15,21 @@ from mcp.server.mcpserver import MCPServer
 
 from lib.bot_preflight import format_preflight_block, run_bot_preflight
 from lib.deliverables import infer_deliverable_globs
-from lib.git_scope import format_scope_report, git_changed_files, git_diff_excerpt, scope_violations
+from lib.git_scope import (
+    format_scope_report,
+    git_changed_files,
+    git_current_branch,
+    git_diff_excerpt,
+    scope_violations,
+)
 from lib.jira_repo_router import resolve_route
+from lib.review_card import validate_jira_payload, validate_ticket_key
 from lib.review_output import build_review_summary
 from lib.scout_intake import intake_from_text
 from lib.signoff_gate import run_signoff_checks
 from lib.ticket_gap_report import format_ticket_list, run_bundle_report
 
-SCOUT_VERSION = "5.0.0"
+SCOUT_VERSION = "5.1.0"
 
 mcp = MCPServer("semantic-scout")
 
@@ -59,8 +66,17 @@ def _bundle_from_jira(
 
 @mcp.tool()
 def scout_engine_health() -> str:
-    """Engine sign-off (universal matrix + deliverable inference)."""
-    return json.dumps({**run_signoff_checks(), "scout_version": SCOUT_VERSION}, indent=2)
+    """Engine sign-off. Must pass before trusting scout_ticket_review."""
+    signoff = run_signoff_checks()
+    return json.dumps(
+        {
+            **signoff,
+            "scout_version": SCOUT_VERSION,
+            "primary_tool": "scout_ticket_review",
+            "contract": "Returns review_card_markdown + readiness READY|NOT READY from live Jira + git",
+        },
+        indent=2,
+    )
 
 
 @mcp.tool()
@@ -143,18 +159,40 @@ def scout_ticket_review(
     scope_mode: str = "ticket",
 ) -> str:
     """
-    Full review from Jira text + git diff only. No Paginate, no static ticket JSON.
-    Pass artifact_glob when Jira does not name the file (e.g. **/My Report.rdl).
+    Primary Semantic Scout tool — full pre-PR review from Jira + git.
+    Always use this (not skill-only guesswork). Returns review_card_markdown and readiness.
     """
     root = Path(repo_root).resolve()
     if not root.is_dir():
         return json.dumps({"ok": False, "error": f"repo_root not found: {root}"})
+
+    key_ok, key_msg = validate_ticket_key(ticket_key)
+    if not key_ok:
+        return json.dumps({"ok": False, "error": key_msg})
+
+    signoff = run_signoff_checks()
+    engine_ok = bool(signoff.get("ok"))
+    if not engine_ok:
+        return json.dumps(
+            {
+                "ok": False,
+                "error": "Scout engine sign-off failed",
+                "signoff": signoff,
+                "hint": "Run scout_engine_health and fix scout/lib install",
+            },
+            indent=2,
+        )
+
+    jira_notes = validate_jira_payload(summary, description, comments_text)
+    ticket_key = key_msg
 
     intake, bundle_file = _bundle_from_jira(
         ticket_key, summary, description, comments_text, artifact_glob
     )
     changed_paths = git_changed_files(root, base_ref)
     diff_excerpt = git_diff_excerpt(root, base_ref)
+    branch_name = git_current_branch(root)
+    deliverable_globs = infer_deliverable_globs(summary, description, comments_text)
     branch_ctx = {
         "base_ref": base_ref,
         "changed_paths": changed_paths,
@@ -191,22 +229,28 @@ def scout_ticket_review(
         head_sha and circuit_reviewed_sha and head_sha != circuit_reviewed_sha
     )
     summary_obj = build_review_summary(
-        ticket_key=ticket_key.strip().upper(),
+        ticket_key=ticket_key,
         matrix_markdown=intake["matrix_markdown"],
         scope_violations=violations,
         bot_predictions=bot.get("predictions") or [],
         reports=reports,
         changed_paths=changed_paths,
         circuit_stale=circuit_stale,
+        engine_ok=engine_ok,
+        branch_name=branch_name,
+        base_ref=base_ref,
+        deliverable_globs=deliverable_globs,
+        jira_confidence_notes=jira_notes,
     )
 
     return json.dumps(
         {
             "ok": True,
             "scout_version": SCOUT_VERSION,
-            "deliverable_globs": infer_deliverable_globs(
-                summary, description, comments_text
-            ),
+            "readiness": summary_obj.get("readiness"),
+            "confidence": summary_obj.get("confidence"),
+            "review_card_markdown": summary_obj.get("review_card_markdown"),
+            "deliverable_globs": deliverable_globs,
             "review": summary_obj,
             "matrix_markdown": intake["matrix_markdown"],
             "scope_report": format_scope_report(violations),
