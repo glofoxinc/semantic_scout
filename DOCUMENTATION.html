@@ -49,7 +49,7 @@
     }
     header .lead {
       margin: 0 auto 22px;
-      max-width: 720px;
+      max-width: 760px;
       font-size: 18px;
       color: #E8EEF5;
     }
@@ -86,6 +86,38 @@
     }
     h3 { margin: 20px 0 8px; color: var(--navy-2); font-size: 16px; }
     p { margin: 0 0 12px; }
+    .brief dt {
+      font-weight: 700;
+      color: var(--navy);
+      margin: 16px 0 6px;
+      font-size: 15px;
+    }
+    .brief dt:first-child { margin-top: 0; }
+    .brief dd {
+      margin: 0 0 8px 0;
+      padding-left: 0;
+      color: var(--ink);
+    }
+    .brief ul {
+      margin: 6px 0 0 0;
+      padding-left: 1.25rem;
+    }
+    .brief li { margin-bottom: 6px; }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .scout, .forge {
+      border-radius: 10px;
+      padding: 16px 18px;
+      background: #f8fafc;
+      font-size: 14px;
+    }
+    .scout { border-left: 5px solid var(--gold); }
+    .forge { border-left: 5px solid var(--muted); }
+    .scout h3, .forge h3 { margin-top: 0; font-size: 15px; }
     .compare {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -102,7 +134,7 @@
     .before h3, .after h3 { margin-top: 0; }
     .highlight {
       text-align: center;
-      font-size: 22px;
+      font-size: 20px;
       color: var(--ok);
       font-weight: 700;
       margin: 18px 0 0;
@@ -130,9 +162,6 @@
       background: var(--navy);
       color: var(--cream);
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       line-height: 32px;
       text-align: center;
     }
@@ -153,20 +182,6 @@
       white-space: pre-wrap;
       border-top: 4px solid var(--gold);
     }
-    .keys {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .key {
-      background: var(--navy);
-      color: #E8EEF5;
-      border-radius: 10px;
-      padding: 18px 16px 16px;
-      text-align: left;
-    }
-    .key strong { display: block; color: var(--cream); font-size: 16px; margin-bottom: 8px; }
-    .key span { font-size: 14px; color: #E8EEF5; line-height: 1.45; }
     .prompt {
       background: #12243C;
       color: var(--cream);
@@ -194,62 +209,116 @@
       padding: 8px 0 24px;
     }
     @media (max-width: 720px) {
-      .compare, .keys, .abc { grid-template-columns: 1fr; }
+      .compare, .pair, .abc { grid-template-columns: 1fr; }
       header h1 { font-size: 32px; }
     }
   </style>
 </head>
 <body>
   <header>
-      <p class="eyebrow">BEFORE YOU CREATE A PULL REQUEST</p>
+    <p class="eyebrow">JIRA TO BRANCH — BEFORE YOU OPEN A PR</p>
     <h1>Semantic Scout</h1>
-    <p class="lead">You give your Jira ticket. Scout checks your Git branch against that ticket, then tells you what is done, what is still missing, and what to fix before you create the pull request.</p>
+    <p class="lead">On-demand pre-PR review for any <strong>AN</strong> or <strong>PIC</strong> ticket. Scout reads Jira (including comments), reads your git branch, and tells you what is done, what is missing, and what bots are likely to flag — before reviewers see the PR.</p>
     <div class="pills">
-      <span class="pill">v5.0 universal</span>
+      <span class="pill">Cursor skill + MCP</span>
+      <span class="pill">v5 universal</span>
       <span class="pill">Jira + git only</span>
-      <span class="pill">Works in Cursor</span>
-      <span class="pill">Setup ~ 5 minutes, once</span>
-      <span class="pill">Saves ~ 15 to 30 min per ticket</span>
+      <span class="pill">~5 min setup once</span>
     </div>
   </header>
 
   <main>
     <section>
+      <h2>Product brief</h2>
+      <dl class="brief">
+        <dt>Goal</dt>
+        <dd>Give the team an on-demand way to check that <strong>ticket work is actually on the branch</strong> before anyone opens a pull request.</dd>
+
+        <dt>Description</dt>
+        <dd>Semantic Scout is the <strong>delivery-truth layer for BI tickets</strong>. You point it at a Jira key and your feature branch. It builds a requirement list from the ticket, infers which files should change (dashboard, paginated report, semantic model), scores evidence in the diff, warns on scope creep, and surfaces bot-ahead items from squad history. It does <strong>not</strong> replace lakehouse SQL proof — pair with <strong>KPI Forge</strong> (numbers) and <strong>Fabric Validator</strong> when KPIs must match SQL.</dd>
+
+        <dt>Success looks like</dt>
+        <dd>
+          <ul>
+            <li>Any ticket can be reviewed when needed — no pre-built JSON per ticket.</li>
+            <li>Every acceptance criterion gets a <strong>met / missing / manual</strong> line tied to files.</li>
+            <li><code>scout_ticket_review</code> returns PASS-style clarity on delivery + branch hygiene.</li>
+            <li>BI devs run the flow from Cursor (skill + MCP) without one-off checklists in chat.</li>
+            <li>You complete the <strong>SCOUT RATING CARD</strong>, then choose <strong>A / B / C</strong> before the PR.</li>
+          </ul>
+        </dd>
+
+        <dt>What we can achieve</dt>
+        <dd>
+          <ul>
+            <li>Standardized pre-PR reviews instead of scattered “are we good?” threads.</li>
+            <li>Faster intake of new tickets — deliverable files inferred from the title and description.</li>
+            <li>Repeatable scope discipline (no surprise <code>scripts/</code> or extra reports on the branch).</li>
+            <li>Bot comments predicted early from learned PR patterns.</li>
+          </ul>
+        </dd>
+
+        <dt>What we can use it for</dt>
+        <dd>
+          <ul>
+            <li>Pre-PR gate on every AN/PIC change.</li>
+            <li>Regression after DAX, RDL, or filter edits — “did we ship everything Jira asked for?”</li>
+            <li>New ticket kickoff — confirm scope and file list before you code.</li>
+            <li>Self-service review when reviewers are busy — you still own the final <strong>B</strong> decision.</li>
+          </ul>
+        </dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Scout vs KPI Forge (simple split)</h2>
+      <div class="pair">
+        <div class="scout">
+          <h3>Semantic Scout</h3>
+          <p><strong>Question:</strong> Did I implement what Jira asked, on the right files, on this branch?</p>
+          <p><strong>Inputs:</strong> Jira + git diff.</p>
+          <p><strong>Output:</strong> Ratings, missings, bot-ahead, scope warnings.</p>
+        </div>
+        <div class="forge">
+          <h3>KPI Forge</h3>
+          <p><strong>Question:</strong> Does lakehouse SQL match dashboard KPIs page by page?</p>
+          <p><strong>Inputs:</strong> PBIR report + semantic model.</p>
+          <p><strong>Output:</strong> SQL scaffolds + maturity score; numbers proven in Fabric.</p>
+        </div>
+      </div>
+      <p class="highlight">Scout before PR · KPI Forge / Fabric Validator when numbers must match SQL</p>
+    </section>
+
+    <section>
       <h2>What you will see</h2>
-      <p>After you type <strong>Semantic Scout for AN-XXXX</strong> (your ticket), Scout returns one card. Here is what each part means in plain language.</p>
       <table>
         <tr><th>On the card</th><th>In simple words</th></tr>
         <tr>
           <td><strong>Jira requirement rating</strong></td>
-          <td>How much of the Jira ticket is actually done in your files. 100 means every requested item is there. A low score means the ticket asked for work you have not put on the branch yet.</td>
+          <td>How much of the ticket is evidenced in your changed files.</td>
         </tr>
         <tr>
           <td><strong>Branch rating</strong></td>
-          <td>How clean the branch is for a pull request. Unrelated paths (scripts, docs) and scope warnings affect this. Other reports on the branch are flagged as <em>info</em> in ticket scope mode — they do not zero out delivery by themselves.</td>
+          <td>PR cleanliness — scope, extra paths, risky diffs. Other reports on the branch show as info in ticket scope mode.</td>
         </tr>
         <tr>
           <td><strong>Bot ahead</strong></td>
-          <td>What squad history says bots may comment on. This is <strong>separate</strong> from Jira delivery score — fix or accept before you pick <strong>B</strong>.</td>
+          <td>Separate from delivery — what bots often comment on for similar diffs.</td>
         </tr>
         <tr>
-          <td><strong>Combined + READY</strong></td>
-          <td>MCP hint only. You still complete the <strong>SCOUT RATING CARD</strong>. <strong>READY YES</strong> means no blocking missings in Scout’s view. <strong>READY NO</strong> means fix missings and run again.</td>
+          <td><strong>READY</strong></td>
+          <td>MCP hint only. You still sign the rating card before <strong>B</strong>.</td>
         </tr>
         <tr>
-          <td><strong>Missings</strong></td>
-          <td>The ticket asked for these things. They are not in your branch. Example: Join Type is on the dashboard but not on the paginated report.</td>
-        </tr>
-        <tr>
-          <td><strong>Suggestions (ahead)</strong></td>
-          <td>What to do next so reviewers and GitHub bots do not bounce the PR. Typical items: update the help / documentation page, keep the dashboard and paginated report in line, or fix something bots usually comment on.</td>
+          <td><strong>Missings + suggestions</strong></td>
+          <td>AC not in the diff yet; docs, parity, companions when the ticket implies them.</td>
         </tr>
       </table>
     </section>
 
     <section>
       <h2>Who this is for</h2>
-      <p>Insights / Glofox analysts on <strong>AN</strong> or <strong>PIC</strong> tickets — dashboards, paginated reports, semantic models.</p>
-      <p>If you are about to create a pull request, run Scout first.</p>
+      <p>CC171 Insights / Glofox — analysts and BI devs on dashboards, paginated reports, and semantic models (<strong>AN</strong>, <strong>PIC</strong>).</p>
     </section>
 
     <section>
@@ -257,132 +326,82 @@
       <div class="compare">
         <div class="before">
           <h3>Without Scout</h3>
-          <p>PRs bounce for extra files, missing ticket work, or GitHub bots. Reviewers spend 20–40 minutes. Often twice. Documentation and the paginated twin get forgotten.</p>
+          <p>PRs bounce for scope creep, half-done AC, or bot comments. Review cycles repeat. Paginated twins and docs get skipped.</p>
         </div>
         <div class="after">
           <h3>With Scout</h3>
-          <p>One card: ratings, missings, and suggestions. You fix, then raise. Bots are predicted from squad history, not guessed after the fact.</p>
+          <p>One card before the PR. Fix missings, clear bot-ahead, re-run. Reviewers start from a cleaner branch.</p>
         </div>
       </div>
-      <p class="highlight">About 15 to 30 minutes back, each ticket</p>
-    </section>
-
-    <section>
-      <h2>v5 — universal (what changed)</h2>
-      <p>Every review is built from <strong>Jira text + your git diff</strong>. Scout does <strong>not</strong> load static ticket JSON, Paginate Forge, or prebuilt country bundles at runtime.</p>
-      <table>
-        <tr><th>Source</th><th>Used?</th></tr>
-        <tr><td>Jira summary, description, comments</td><td>Yes — requirement matrix</td></tr>
-        <tr><td>Branch diff vs <code>main</code> / <code>Standard_dev</code></td><td>Yes — evidence per AC</td></tr>
-        <tr><td>Inferred file globs from ticket title</td><td>Yes — e.g. <code>**/New Members - Details.rdl</code></td></tr>
-        <tr><td><code>scout/data/examples/</code> on GitHub</td><td>No — reference only for maintainers</td></tr>
-        <tr><td>MCP tool</td><td><code>scout_ticket_review</code> (primary)</td></tr>
-      </table>
+      <p class="highlight">Roughly 15–30 minutes saved per ticket</p>
     </section>
 
     <section>
       <h2>How it works</h2>
       <div class="mermaid">
 flowchart TD
-  A["You: Semantic Scout for AN-XXXX"] --> B["Read Jira + all comments"]
-  B --> C["Infer deliverable files from ticket text"]
-  C --> D["Read the branch diff"]
-  D --> E["Rate Jira vs branch + bot ahead"]
-  E --> F["List missings and suggestions"]
-  F --> G{"Your choice"}
-  G -->|"A Fix first"| H["Apply fixes, then re-rate"]
-  G -->|"B Raise PR"| I["PR only after rating card"]
-  G -->|"C Re-check"| J["You edit, run Scout again"]
+  A["Semantic Scout for AN-XXXX"] --> B["Jira summary + description + comments"]
+  B --> C["Infer deliverables .rdl / dashboard / .tmdl"]
+  C --> D["Git diff vs main or Standard_dev"]
+  D --> E["Rate requirements + branch + bot ahead"]
+  E --> F{"A fix · B PR · C re-check"}
       </div>
+      <p style="margin-top:12px;font-size:14px;color:var(--muted)">v5 is universal: no static ticket bundles, no Paginate runtime. MCP primary tool: <code>scout_ticket_review</code>. Health check: <code>scout_engine_health</code>.</p>
     </section>
 
     <section>
-      <h2>Setup — once, about 5 minutes</h2>
-      <p>You do not run install scripts. This is a Cursor skill.</p>
+      <h2>Setup — once</h2>
       <ol class="steps">
-        <li><strong>Open Cursor.</strong></li>
-        <li><strong>In chat, type exactly</strong><br/><span class="prompt">Setup Semantic Scout</span></li>
-        <li><strong>If it asks for GitHub or Jira</strong>, answer once. That is all.</li>
-        <li><strong>Prove it works</strong> — type <span class="prompt">Semantic Scout for AN-XXXX</span> with your real ticket.</li>
+        <li>Clone <strong>glofoxinc/semantic_scout</strong>.</li>
+        <li>In Cursor: <span class="prompt">Setup Semantic Scout</span></li>
+        <li>Connect Atlassian + GitHub if asked; <code>pip install -r scout/requirements.txt</code>.</li>
+        <li>Restart Cursor; run <span class="prompt">scout_engine_health</span> — must show <code>ok: true</code>, version <strong>5.0.0</strong>.</li>
       </ol>
-      <div class="done"><strong>You are done when</strong> you see a navy card titled <em>SEMANTIC SCOUT — BEFORE RAISING PR</em>, or Cursor asked for a login, you answered, and then the card appeared. If skills do not show, restart Cursor once and say Setup Semantic Scout again.</div>
-    </section>
-
-    <section>
-      <h2>How repo and branch are found</h2>
-      <p>You give <strong>only the Jira key</strong> (<code>AN-XXXX</code> or <code>PIC-XXXX</code>). You do not name the GitHub repo.</p>
-      <table>
-        <tr><th>Ticket</th><th>Repo Scout selects</th></tr>
-        <tr><td>AN, standard report, no client name</td><td><code>glofoxinc/gf-insights-fitnessbi</code></td></tr>
-        <tr><td>Fabric / lakehouse / notebook in the ticket</td><td><code>glofoxinc/gf-fabric-fitnessbi</code></td></tr>
-        <tr><td>PIC with a client name in the title</td><td>matching <code>glofoxinc/abc-customize-*</code></td></tr>
-        <tr><td>Ticket already contains a GitHub URL</td><td>that repo</td></tr>
-      </table>
-      <p style="margin-top:12px">Then Scout looks for a branch whose name contains the ticket key (<code>feature/&lt;KEY&gt;-*</code> or <code>&lt;KEY&gt;-*</code>). Diff base is <code>main</code>, unless you asked for a promotion PR to <code>Standard_dev</code>. If no branch matches, Scout asks. It does not invent one.</p>
+      <div class="done"><strong>Done when</strong> you see the navy <em>SEMANTIC SCOUT — BEFORE RAISING PR</em> card on a real ticket.</div>
     </section>
 
     <section>
       <h2>Daily use</h2>
-      <h3>Before you raise a PR</h3>
-      <p><span class="prompt">Semantic Scout for AN-XXXX</span></p>
-      <p>Use your ticket. Scout uses the current branch.</p>
-      <h3>After the card — reply with one letter</h3>
-      <div class="abc">
-        <div><div class="letter">A</div><strong>Fix first</strong><p>Scout helps apply missings and bot items, then rates again.</p></div>
-        <div><div class="letter">B</div><strong>Raise PR</strong><p>You accept remaining risk. Only now may a PR be opened.</p></div>
-        <div><div class="letter">C</div><strong>Re-check</strong><p>You edit locally. Run Scout again when ready.</p></div>
+      <p><span class="prompt">Semantic Scout for AN-XXXX</span> on your product repo branch before every PR.</p>
+      <div class="abc" style="margin-top:14px">
+        <div><div class="letter">A</div><strong>Fix first</strong><p>Address missings and bot items; run Scout again.</p></div>
+        <div><div class="letter">B</div><strong>Raise PR</strong><p>Only after rating card — you accept remaining risk.</p></div>
+        <div><div class="letter">C</div><strong>Re-check</strong><p>You edited locally; run Scout when ready.</p></div>
       </div>
-      <h3>If a PR already exists</h3>
-      <p><span class="prompt">Semantic Scout on owner/repo#N for AN-XXXX</span></p>
     </section>
 
     <section>
       <h2>Example card</h2>
       <div class="card-ex">SEMANTIC SCOUT — BEFORE RAISING PR
-Ticket: AN-XXXX — &lt;ticket summary&gt;
-Deliverables: **/Report Name.rdl  (inferred from Jira)
-JIRA REQUIREMENT RATING:  90/100
-BRANCH RATING:            85/100
-BOT AHEAD:                clear (or list predicted bot items)
-COMBINED (MCP HINT):      88/100   READY: YES
+Ticket: AN-XXXX — &lt;summary from Jira&gt;
+Deliverables: **/New Members - Details.rdl  (inferred)
+
+JIRA REQUIREMENT RATING:  92/100
+BRANCH RATING:            88/100
+BOT AHEAD:                clear
 
 REQUIREMENTS
-  [met]     &lt;criterion from Jira&gt;  —  &lt;file&gt;
-  [missing] &lt;criterion from Jira&gt;  —  not in the diff
+  [met]     Country filter on report table  —  New Members - Details.rdl
+  [missing] Documentation page updated      —  not in diff
 
-MISSINGS
-  - &lt;AC still not evidenced on branch&gt;
-
-AHEAD SUGGESTIONS
-  - Docs: Measures and Definitions if KPI / filter / label changed
-  - Parity: dashboard + paginated if both are in scope
-  - Bot ahead: scope / scripts / protected report.json — see bot_resolution block</div>
-    </section>
-
-    <section>
-      <h2>What Scout looks for</h2>
-      <table>
-        <tr><th>If the branch has</th><th>Scout will suggest</th></tr>
-        <tr><td>Dashboard (<code>report.json</code>)</td><td>Matching paginated report · documentation if KPI/filter/label changed · protected visual audit</td></tr>
-        <tr><td>Paginated (<code>.rdl</code>)</td><td>Matching dashboard · date through yesterday · date guard · NoRowsMessage / ErrorBanner</td></tr>
-        <tr><td>Both</td><td>Parity: dates, filters, currency by location, KPI logic</td></tr>
-        <tr><td>Semantic model (<code>.tmdl</code>)</td><td>Visuals still bind · unused objects via Semantic Forge (Word plan, then confirm)</td></tr>
-      </table>
+READY (hint): YES — complete rating card before B</div>
     </section>
 
     <section>
       <h2>If something fails</h2>
       <table>
         <tr><th>What you see</th><th>What to do</th></tr>
-        <tr><td>Skill not found</td><td>Say <strong>Setup Semantic Scout</strong>. Restart Cursor if it still does not appear.</td></tr>
-        <tr><td>No Jira text</td><td>Connect Atlassian in Cursor, or paste the acceptance criteria in chat.</td></tr>
-        <tr><td>Empty bot list</td><td>Still trust ratings and missings. Novel paths have no bot history.</td></tr>
-        <tr><td>READY: NO</td><td>Fix the missings listed. Run Scout again. Do not pick B yet.</td></tr>
+        <tr><td>Skill not found</td><td><strong>Setup Semantic Scout</strong>; restart Cursor.</td></tr>
+        <tr><td>No Jira text</td><td>Fix Atlassian MCP or paste AC into chat.</td></tr>
+        <tr><td>READY: NO</td><td>Fix missings; do not choose B yet.</td></tr>
+        <tr><td>Need KPI vs SQL proof</td><td>Use KPI Forge + Fabric Validator — Scout does not run lakehouse SQL.</td></tr>
       </table>
     </section>
-
   </main>
-  <footer>Semantic Scout v5.0 · glofoxinc/semantic_scout · CC171 Insights · Semantic Forge when the model changed · SIGNOFF-v5.0.md on main</footer>
+  <footer>
+    Semantic Scout v5.0 · <a href="https://github.com/glofoxinc/semantic_scout">glofoxinc/semantic_scout</a> ·
+    Pair with KPI Forge for dashboard SQL · Semantic Forge when the model changed
+  </footer>
   <script>mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { primaryColor: "#C9A227", primaryTextColor: "#0A1628", primaryBorderColor: "#0A1628", lineColor: "#0A1628", secondaryColor: "#E8EEF5", tertiaryColor: "#F8FAFC", fontFamily: "Segoe UI" } });</script>
 </body>
 </html>
