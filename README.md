@@ -4,7 +4,9 @@
 
 | Resource | Link |
 |----------|------|
-| Team guide (browser) | https://glofoxinc.github.io/semantic_scout/DOCUMENTATION.html — Goal, success criteria, Scout vs KPI Forge |
+| Team guide (browser) | https://glofoxinc.github.io/semantic_scout/DOCUMENTATION.html |
+| Requirements | [`REQUIREMENTS.md`](./REQUIREMENTS.md) · maintainer trace [`REQUIREMENTS-STATUS.md`](./REQUIREMENTS-STATUS.md) |
+| Product copy | [`PRODUCT-BRIEF.md`](./PRODUCT-BRIEF.md) |
 | Cursor skill (install source) | [`docs/SKILL.md`](./docs/SKILL.md) |
 | Hero image | [`share-image.svg`](./share-image.svg) |
 

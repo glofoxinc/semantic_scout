@@ -1,5 +1,7 @@
 # Semantic Scout MCP — product brief (copy template)
 
+Full requirement set: **[REQUIREMENTS.md](./REQUIREMENTS.md)**
+
 Use this block for Slack, Confluence, rollout decks, or Jira tooling pages. Same structure as other Insights MCP products.
 
 ---

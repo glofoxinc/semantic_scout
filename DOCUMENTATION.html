@@ -110,14 +110,30 @@ flowchart TD
       <p>Before every PR: <span class="prompt">Semantic Scout for AN-XXXX</span> (or PIC-XXXX) on your feature branch. Fix what is missing. Run again if needed. Then open the PR.</p>
     </section>
     <section>
-      <h2>Example</h2>
-      <div class="card-ex">Ticket: AN-XXXX — New Members paginated update
-Jira score: 90/100
-Branch score: 85/100
-READY: YES
+      <h2>Review card (what you get)</h2>
+      <p>Live results come from your Jira ticket and git branch. Layout below is the standard format.</p>
+      <div class="card-ex">Semantic Scout Review
+Ticket: AN-XXXX · Feature branch: feature/AN-XXXX-short-name
 
-Missing: Documentation page not updated
-Suggestion: Align dashboard and paginated date defaults</div>
+Jira coverage        — 90/100  (from criteria evidence)
+Branch hygiene       — 85/100  (from branch checks)
+
+Acceptance criteria
+  MET     — Dashboard changes implemented
+            Evidence: New Members.Report/report.json
+  MISSING — Required semantic model update
+            Evidence: no sufficient supporting diff identified
+  MISSING — Documentation or parity requirement
+            Evidence: required change not verified
+
+Additional findings
+  · Missing companion paginated report (if ticket implies both)
+  · Unrelated or out-of-scope paths on branch
+  · Potential reviewer or bot feedback
+  · Suggested fixes and file paths
+
+Readiness gate
+  READY: NO — fix MISSING rows, then run Scout again</div>
     </section>
     <section>
       <h2>If this happens</h2>
